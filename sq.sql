@@ -1,1 +1,7 @@
-//77//
+CREATE TABLE students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    card_id VARCHAR(255) UNIQUE NOT NULL,
+    access_level INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
