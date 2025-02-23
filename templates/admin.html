@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='backend.js') }}"></script>
+
+</head>
+<body>
+  <!-- Admin Dashboard -->
+  <div class="admin-panel">
+    <h1>Admin!</h1>
+
+    <div class="admin-boxes">
+      <!-- Add User Box -->
+      <div class="admin-box" id="addUserBox">
+        <h2>Add User</h2>
+        <p>Click here to add new users.</p>
+        <!-- Hidden Add User Form -->
+        <form class="add-user-form" id="addUserForm"> 
+            <input type="text" name="name" placeholder="User Name" required />
+            <input type="email" name="email" placeholder="User Email" required />
+            <input type="text" name="user_id" placeholder="User ID" required />
+            <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
+            <button type="submit">Add User</button>
+        </form>
+      </div>
+
+      <!-- Remove User Box -->
+      <div class="admin-box">
+        <h2>Remove User</h2>
+        <p>Click here to remove existing users.</p>
+        <!-- Remove User Form -->
+        <form class="remove-user-form" id="removeUserForm">
+            <input type="text" name="user_id" placeholder="User ID" required />
+            <input type="text" name="user_email" placeholder="User Email" required />
+            <button type="submit">Remove User</button>
+        </form>
+      </div>
+
+      <!-- Review Users Box -->
+      <div class="admin-box" id="reviewUsersBox">
+        <h2>Review Users</h2>
+        <table id="usersTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>User ID</th>
+              <th>Swipe Card</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.swipe_card }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline JavaScript for Showing Form -->
+  <script>
+    // Show the add user form when clicking the Add User box
+    document.getElementById('addUserBox').addEventListener('click', function () {
+      const form = document.getElementById('addUserForm');
+      form.style.display = 'flex'; // Display the form when clicked
+    });
+  </script>
+</body>
+</html>
