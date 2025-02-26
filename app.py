@@ -5,17 +5,13 @@ from models import db, User
 app = Flask(__name__)
 
 # Ensure the database is stored in the instance folder
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin:kpmMg!L!jpf5xDn@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-# DELETE & RECREATE DATABASE ON STARTUP 
+# ✅ CREATE DATABASE TABLES (Only if they don't exist)
 with app.app_context():
-    db_path = os.path.join(app.instance_path, "site.db")  # Get the correct path
-    if os.path.exists(db_path):
-        os.remove(db_path)  # Delete old database
-    db.create_all()  # Recreate database with updated schema
-
+    db.create_all()  # This will create tables if they do not exist
 
 @app.route('/')
 def index():
@@ -57,6 +53,13 @@ def remove_user():
         return jsonify({"message": "User removed successfully"})
     else:
         return jsonify({"message": "User not found"}), 404
-    
+@app.route('/review_users', methods=['GET'])
+def review_users():
+    users = User.query.all()
+    users_list = [user.to_dict() for user in users]
+    return jsonify(users_list)
+   
 if __name__ == '__main__':
     app.run(debug=True)
+
+    

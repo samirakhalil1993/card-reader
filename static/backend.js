@@ -69,10 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     const addUserForm = document.getElementById("addUserForm");
     const addUserBox = document.getElementById("addUserBox");
@@ -113,8 +109,32 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show "Review Users" modal
     reviewUsersBox.addEventListener("click", function () {
         showForm(reviewUsersModal);
+        fetchUsers(); // Load users when the modal opens
     });
 
     // Hide forms when clicking the overlay
     overlay.addEventListener("click", hideForms);
+
+    // Function to fetch users and populate the table
+    function fetchUsers() {
+        fetch('/review_users')
+            .then(response => response.json())
+            .then(data => {
+                let tableBody = document.querySelector("#usersTable tbody");
+                tableBody.innerHTML = ""; // Clear old data
+
+                data.forEach(user => {
+                    let row = `
+                        <tr>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.user_id}</td>
+                            <td>${user.swipe_card}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching users:', error));
+    }
 });
