@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="{{ url_for('static', filename='backend.js') }}"></script>
 
@@ -11,7 +12,10 @@
 <body>
   <!-- Admin Dashboard -->
   <div class="admin-panel">
-    <h1>Admin!</h1>
+    <header class="admin-header">
+      <h1><i class="fas fa-user-shield"></i> Student Access Control</h1>
+    </header>
+
 
     <div class="admin-boxes">
       <!-- Add User Box -->
@@ -19,53 +23,73 @@
         <h2>Add User</h2>
         <p>Click here to add new users.</p>
         <!-- Hidden Add User Form -->
-        <form class="add-user-form" id="addUserForm"> 
-            <input type="text" name="name" placeholder="User Name" required />
-            <input type="email" name="email" placeholder="User Email" required />
-            <input type="text" name="user_id" placeholder="User ID" required />
-            <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
-            <button type="submit">Add User</button>
-        </form>
       </div>
 
-      <!-- Remove User Box -->
-      <div class="admin-box">
+      
+      
+      <div class="admin-box" id="removeUserBox">
         <h2>Remove User</h2>
         <p>Click here to remove existing users.</p>
-        <!-- Remove User Form -->
-        <form class="remove-user-form" id="removeUserForm">
-            <input type="text" name="user_id" placeholder="User ID" required />
-            <input type="text" name="user_email" placeholder="User Email" required />
-            <button type="submit">Remove User</button>
-        </form>
       </div>
-
+      
+      
       <!-- Review Users Box -->
       <div class="admin-box" id="reviewUsersBox">
         <h2>Review Users</h2>
+        <p>Click here to review existing users.</p>
+      </div>
+        <!-- Image Below the Boxes -->
+        <div class="image-container">
+          <img src="{{ url_for('static', filename='pic.png') }}" alt="Computer Access Illustration" class="dashboard-image">
+      </div>
+      
+      
+      <!-- Hidden Review Users Modal -->
+      <div class="review-users-modal" id="reviewUsersModal">
         <table id="usersTable">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>User ID</th>
-              <th>Swipe Card</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in users %}
-              <tr>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.user_id }}</td>
-                <td>{{ user.swipe_card }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>User ID</th>
+                  <th>Swipe Card</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.user_id }}</td>
+                  <td>{{ user.swipe_card }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          
+          
+        </div>
+        <form class="add-user-form" id="addUserForm"> 
+          <input type="text" name="name" placeholder="User Name" required />
+          <input type="email" name="email" placeholder="User Email" required />
+          <input type="text" name="user_id" placeholder="User ID" required />
+          <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
+          <button type="submit">Add User</button>
+        </form>
+        
+        <!-- Hidden Remove User Form -->
+        <form class="remove-user-form" id="removeUserForm">
+          <input type="text" name="user_id" placeholder="User ID" required />
+          <input type="text" name="user_email" placeholder="User Email" required />
+          <button type="submit">Remove User</button>
+        </form>
+
   </div>
+  <footer class="admin-footer">
+    <p>© 2024 University Computer Access System | All rights reserved.</p>
+  </footer>
 
   <!-- Inline JavaScript for Showing Form -->
   <script>

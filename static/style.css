@@ -6,7 +6,7 @@
   font-family: 'Arial', sans-serif;
 }
 
-/* Login Page Styling */
+/* Login Page Styling ***********************************/
 .login-container {
   background-color: #f5f5f5;
   width: 300px;
@@ -39,7 +39,8 @@
   cursor: pointer;
 }
 
-/* Admin Panel Styling */
+/* Admin Panel Styling ************************************/
+
 .admin-panel {
   padding: 40px;
   text-align: center;
@@ -53,21 +54,47 @@
   color: #333;
 }
 
-/* Box Container */
-.admin-boxes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* Header Styling *********************************************/
+.admin-header {
+  background: linear-gradient(90deg, #007bff, #0056b3); /* Modern gradient */
+  color: white;
+  text-align: center;
+  padding: 15px 0; /* Reduce padding to make it smaller */
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.admin-header h1 {
+  font-size: 2rem; /* Slightly smaller for balance */
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
 }
 
-/* Individual Box Styling */
+
+
+/* Box Container *********************************************/
+.admin-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 30px;  /* More spacing */
+  max-width: 900px; /* Keeps it structured */
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.admin-box {
+  width: 280px; /* Consistent box size */
+  text-align: center;
+}
+
+
+/* Individual Box Styling ************************************/
 .admin-box {
   background-color: #ffffff;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
@@ -83,7 +110,7 @@
 }
 
 .admin-box p {
-  color: #555;
+  color: #080808;
 }
 
 /* Responsive Design */
@@ -100,13 +127,35 @@
 
 
 
-/* Add User Form Styling */
+/* Add User Form Styling ************************************/
 .add-user-form {
   display: none; /* Initially hidden */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  z-index: 1000;
+  width: 400px;
   flex-direction: column;
   gap: 10px;
-  margin-top: 20px;
 }
+
+/* Overlay Background */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
 
 .add-user-form input {
   padding: 10px;
@@ -127,58 +176,161 @@
   background-color: #218838;
 }
 
-/* Remove User Form Styling */
+/* Remove User Form Styling ************************************/
 .remove-user-form {
-  display: flex;
+  display: none; /* Initially hidden */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  z-index: 1000;
+  width: 300px;
   flex-direction: column;
   gap: 10px;
-  margin-top: 20px;
 }
 
+/* Input Fields */
 .remove-user-form input {
+  width: 100%;
   padding: 10px;
+  margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+/* Remove Button */
 .remove-user-form button {
   padding: 10px;
+  width: 100%;
   background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .remove-user-form button:hover {
   background-color: #c82333;
 }
-/* Review Users Box Styling */
-#reviewUsersBox {
-  margin-top: 20px;
+
+/* Overlay Background */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 }
 
-#reviewUsersBox table {
+
+/* Review Users Modal Styling ************************************/
+/* Review Users Modal Styling ************************************/
+.review-users-modal {
+  display: none; /* Initially hidden */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  z-index: 1000;
+  width: 80%; /* Make modal wider */
+  max-width: 900px; /* Set a max width */
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+/* Styling for the table inside the modal */
+.review-users-modal table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 15px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-#reviewUsersBox th, #reviewUsersBox td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: left;
+/* Table header */
+.review-users-modal th {
+  background-color: #007bff;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+  font-size: 16px;
 }
 
-#reviewUsersBox th {
-  background-color: #f2f2f2;
+/* Table rows */
+.review-users-modal td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
 }
 
-#reviewUsersBox tr:nth-child(even) {
+/* Alternating row colors for better readability */
+.review-users-modal tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#reviewUsersBox tr:hover {
-  background-color: #f1f1f1;
+/* Hover effect */
+.review-users-modal tr:hover {
+  background-color: #e0e0e0;
+  transition: background 0.3s ease-in-out;
 }
+
+/* Ensure modal is scrollable if content overflows */
+.review-users-modal {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+
+
+.admin-footer {
+  text-align: center;
+  padding: 15px;
+  background: #007bff;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+
+
+/* Centering the image below the boxes **************************/
+.image-container {
+  text-align: center;
+  margin-top: 70px;
+  overflow: hidden; /* Hides extra pixels */
+
+  
+  
+
+  }
+
+/* Make the image responsive */
+.dashboard-image {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px; /* Optional: Smooth corners */
+}
+
 

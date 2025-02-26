@@ -68,3 +68,53 @@ document.addEventListener("DOMContentLoaded", function () {
         removeUserForm.reset();
     });
 });
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const addUserForm = document.getElementById("addUserForm");
+    const addUserBox = document.getElementById("addUserBox");
+    const removeUserForm = document.getElementById("removeUserForm");
+    const removeUserBox = document.getElementById("removeUserBox");
+    const reviewUsersModal = document.getElementById("reviewUsersModal");
+    const reviewUsersBox = document.getElementById("reviewUsersBox");
+    const overlay = document.createElement("div");
+
+    // Create overlay
+    overlay.classList.add("overlay");
+    document.body.appendChild(overlay);
+
+    // Function to show a modal
+    function showForm(form) {
+        form.style.display = "flex";
+        overlay.style.display = "block"; // Show overlay
+    }
+
+    // Function to hide all modals
+    function hideForms() {
+        addUserForm.style.display = "none";
+        removeUserForm.style.display = "none";
+        reviewUsersModal.style.display = "none";
+        overlay.style.display = "none"; // Hide overlay
+    }
+
+    // Show "Add User" form
+    addUserBox.addEventListener("click", function () {
+        showForm(addUserForm);
+    });
+
+    // Show "Remove User" form
+    removeUserBox.addEventListener("click", function () {
+        showForm(removeUserForm);
+    });
+
+    // Show "Review Users" modal
+    reviewUsersBox.addEventListener("click", function () {
+        showForm(reviewUsersModal);
+    });
+
+    // Hide forms when clicking the overlay
+    overlay.addEventListener("click", hideForms);
+});
