@@ -233,71 +233,61 @@
 
 
 /* Review Users Modal Styling ************************************/
-/* Review Users Modal Styling ************************************/
-.review-users-modal {
-  display: none; /* Initially hidden */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
+/* Make Review Users table always visible */
+.review-users-box {
+  width: 600px;
   padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  z-index: 1000;
-  width: 80%; /* Make modal wider */
-  max-width: 900px; /* Set a max width */
-  flex-direction: column;
-  gap: 10px;
   text-align: center;
+  background: white;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-top: 10px;
 }
 
-/* Styling for the table inside the modal */
-.review-users-modal table {
+/* Ensure table fills the box properly */
+.review-users-box table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
+  margin-top: 10px;
 }
 
 /* Table header */
-.review-users-modal th {
+.review-users-box th {
   background-color: #007bff;
   color: white;
-  padding: 15px;
+  padding: 10px;
   text-align: center;
   border: 1px solid #ddd;
-  font-size: 16px;
 }
 
 /* Table rows */
-.review-users-modal td {
-  padding: 12px;
+.review-users-box td {
+  padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
-  font-size: 14px;
 }
 
 /* Alternating row colors for better readability */
-.review-users-modal tr:nth-child(even) {
+.review-users-box tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
 /* Hover effect */
-.review-users-modal tr:hover {
-  background-color: #e0e0e0;
-  transition: background 0.3s ease-in-out;
+.review-users-box tr:hover {
+  background-color: #f1f1f1;
 }
 
-/* Ensure modal is scrollable if content overflows */
-.review-users-modal {
-  max-height: 80vh;
-  overflow-y: auto;
+/* Align forms properly */
+.admin-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+  flex-wrap: wrap;
 }
-
-
+/***************************************************************************/
 
 .admin-footer {
   text-align: center;

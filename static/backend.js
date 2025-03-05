@@ -69,30 +69,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const addUserForm = document.getElementById("addUserForm");
     const addUserBox = document.getElementById("addUserBox");
     const removeUserForm = document.getElementById("removeUserForm");
     const removeUserBox = document.getElementById("removeUserBox");
-    const reviewUsersModal = document.getElementById("reviewUsersModal");
-    const reviewUsersBox = document.getElementById("reviewUsersBox");
     const overlay = document.createElement("div");
 
     // Create overlay
     overlay.classList.add("overlay");
     document.body.appendChild(overlay);
 
-    // Function to show a modal
+    // Function to show a form
     function showForm(form) {
         form.style.display = "flex";
         overlay.style.display = "block"; // Show overlay
     }
 
-    // Function to hide all modals
+    // Function to hide forms
     function hideForms() {
         addUserForm.style.display = "none";
         removeUserForm.style.display = "none";
-        reviewUsersModal.style.display = "none";
         overlay.style.display = "none"; // Hide overlay
     }
 
@@ -104,12 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show "Remove User" form
     removeUserBox.addEventListener("click", function () {
         showForm(removeUserForm);
-    });
-
-    // Show "Review Users" modal
-    reviewUsersBox.addEventListener("click", function () {
-        showForm(reviewUsersModal);
-        fetchUsers(); // Load users when the modal opens
     });
 
     // Hide forms when clicking the overlay
@@ -137,4 +130,9 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error('Error fetching users:', error));
     }
+
+    // ✅ Fetch users when the page loads automatically
+    fetchUsers();
 });
+
+

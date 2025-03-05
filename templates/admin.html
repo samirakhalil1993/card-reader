@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="{{ url_for('static', filename='backend.js') }}"></script>
-
 </head>
+
 <body>
-  <!-- Admin Dashboard -->
+<!-- Admin Dashboard -->
   <div class="admin-panel">
     <header class="admin-header">
       <h1><i class="fas fa-user-shield"></i> Student Access Control</h1>
@@ -32,61 +32,46 @@
         <p>Click here to remove existing users.</p>
       </div>
       
-      
-      <!-- Review Users Box -->
-      <div class="admin-box" id="reviewUsersBox">
-        <h2>Review Users</h2>
-        <p>Click here to review existing users.</p>
-      </div>
-        <!-- Image Below the Boxes -->
-        <div class="image-container">
-          <img src="{{ url_for('static', filename='pic.png') }}" alt="Computer Access Illustration" class="dashboard-image">
-      </div>
-      
-      
-      <!-- Hidden Review Users Modal -->
-      <div class="review-users-modal" id="reviewUsersModal">
-        <table id="usersTable">
+      <!-- Center: Review Users -->
+    <div class="review-users-box">
+      <h2>Review Users</h2>
+      <table id="usersTable">
           <thead>
-                <tr>
+              <tr>
                   <th>Name</th>
                   <th>Email</th>
                   <th>User ID</th>
                   <th>Swipe Card</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for user in users %}
-                <tr>
+              </tr>
+          </thead>
+          <tbody>
+              {% for user in users %}
+              <tr>
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.user_id }}</td>
                   <td>{{ user.swipe_card }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          
-          
-          
-        </div>
-        <form class="add-user-form" id="addUserForm"> 
-          <input type="text" name="name" placeholder="User Name" required />
-          <input type="email" name="email" placeholder="User Email" required />
-          <input type="text" name="user_id" placeholder="User ID" required />
-          <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
-          <button type="submit">Add User</button>
-        </form>
-        
-        <!-- Hidden Remove User Form -->
-        <form class="remove-user-form" id="removeUserForm">
-          <input type="text" name="user_id" placeholder="User ID" required />
-          <input type="text" name="user_email" placeholder="User Email" required />
-          <button type="submit">Remove User</button>
-        </form>
-
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
   </div>
+
+
+<!-- Hidden Forms -->
+<form class="add-user-form" id="addUserForm"> 
+  <input type="text" name="name" placeholder="User Name" required />
+  <input type="email" name="email" placeholder="User Email" required />
+  <input type="text" name="user_id" placeholder="User ID" required />
+  <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
+  <button type="submit">Add User</button>
+</form>
+
+<form class="remove-user-form" id="removeUserForm">
+  <input type="text" name="user_id" placeholder="User ID" required />
+  <input type="text" name="user_email" placeholder="User Email" required />
+  <button type="submit">Remove User</button>
+</form>
   <footer class="admin-footer">
     <p>© 2024 University Computer Access System | All rights reserved.</p>
   </footer>
