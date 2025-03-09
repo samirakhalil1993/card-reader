@@ -7,7 +7,8 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS to allow cross-origin requests
 
 # Configure Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin:kpmMg!L!jpf5xDn@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin:kpmMg!L!jpf5xDn@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin@admin-panel-server:kpmMg!L!jpf5xDn@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -66,13 +67,21 @@ def remove_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ✅ API: Get All Users (For Frontend)
+
+
+# ✅ API: Search User by Name
+# Existing imports and setup remain unchanged
 @app.route('/review_users', methods=['GET'])
 def review_users():
-    users = User.query.all()
+    name = request.args.get('name')  # Get the 'name' query parameter
+    if name:
+        # Filter users whose name contains the search term (case-insensitive)
+        users = User.query.filter(User.name.ilike(f"%{name}%")).all()
+    else:
+        # If no name is provided, return all users
+        users = User.query.all()
     users_list = [user.to_dict() for user in users]
     return jsonify(users_list)
-
 # ✅ Run Flask App
 if __name__ == '__main__':
     app.run(debug=True)
