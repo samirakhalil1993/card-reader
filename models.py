@@ -1,22 +1,31 @@
-from flask_sqlalchemy import SQLAlchemy
+# Import SQLAlchemy for database handling
+from flask_sqlalchemy import SQLAlchemy  
 
-db = SQLAlchemy()
+# Initialize a SQLAlchemy database instance
+db = SQLAlchemy()  
 
-class User(db.Model):
-    __tablename__ = "users"  # Explicitly setting table name
+# Define the User model (table: users)
+class User(db.Model):  
+    __tablename__ = "users"  # Explicitly set the table name
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    user_id = db.Column(db.String(50), unique=True, nullable=False)
-    swipe_card = db.Column(db.String(100), nullable=False)  # Removed unique=True
+    # Primary key: Auto-incremented integer ID
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  
 
-    def to_dict(self):
+    # Name: Required field, max 100 characters
+    name = db.Column(db.String(100), nullable=False)  
+
+    # Email: Must be unique and not null, max 100 characters
+    email = db.Column(db.String(100), unique=True, nullable=False, index=True)  
+
+    # User ID: Stores Swedish Personnummer (YYYYMMDD-XXXX), unique and required
+    user_id = db.Column(db.String(12), unique=True, nullable=False, index=True)  
+
+    # Convert the User object into a dictionary for easy JSON serialization
+    def to_dict(self):  
         """Convert model object to dictionary for JSON responses."""
         return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "user_id": self.user_id,
-            "swipe_card": self.swipe_card
+            "id": self.id,           # Convert 'id' field
+            "name": self.name,       # Convert 'name' field
+            "email": self.email,     # Convert 'email' field
+            "user_id": self.user_id  # Convert 'user_id' field (Personnummer)
         }

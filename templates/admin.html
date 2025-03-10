@@ -50,7 +50,6 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>User ID</th>
-                  <th>Swipe Card</th>
               </tr>
           </thead>
           <tbody>
@@ -59,7 +58,6 @@
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.user_id }}</td>
-                  <td>{{ user.swipe_card }}</td>
               </tr>
               {% endfor %}
           </tbody>
@@ -74,7 +72,6 @@
     <input type="text" name="name" placeholder="User Name" required />
     <input type="email" name="email" placeholder="User Email" required />
     <input type="text" name="user_id" placeholder="User ID" required />
-    <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
     <button type="submit">Add User</button>
   </form>
 

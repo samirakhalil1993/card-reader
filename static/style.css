@@ -149,7 +149,7 @@
 
 
 
-/* Box Container *********************************************/
+/* Box Container *************************************************************************************************************/
 .admin-boxes {
   display: flex;
   justify-content: center;
@@ -258,12 +258,20 @@
   }
 }
 
+#usersTable tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#usersTable tbody tr:hover {
+  background-color: #ffcccc; /* Light red to indicate delete action */
+}
 
 
 
 
 
-/* Add User Form Styling ************************************/
+/* Add User Form Styling ****************************************************************************************/
 .add-user-form {
   display: none; /* Initially hidden */
   position: absolute;
@@ -312,7 +320,7 @@
   background-color: #218838;
 }
 
-/* Remove User Form Styling ************************************/
+/* Remove User Form Styling ********************************************************************************/
 .remove-user-form {
   display: none; /* Initially hidden */
   position: absolute;
