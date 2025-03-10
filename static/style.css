@@ -39,38 +39,113 @@
   cursor: pointer;
 }
 
-/* Admin Panel Styling ************************************/
-
-.admin-panel {
-  padding: 40px;
-  text-align: center;
-  background-color: #f4f4f4;
-  min-height: 100vh;
-}
-
-.admin-panel h1 {
-  margin-bottom: 40px;
-  font-size: 2.5rem;
-  color: #333;
-}
-
-/* Header Styling *********************************************/
+/* Styling for the admin header *****************************************************************************************************************************/
 .admin-header {
-  background: linear-gradient(90deg, #007bff, #0056b3); /* Modern gradient */
-  color: white;
-  text-align: center;
-  padding: 15px 0; /* Reduce padding to make it smaller */
-  margin-bottom: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #007bff, #0056b3); /* Blue gradient background */
+  text-align: center; /* Centers the text */
+  padding: 10px 0; /* Adjusts the vertical padding to reduce header height */
+  margin-bottom: 20px; /* Adds space below the header */
+  border-radius: 8px; /* Rounds the corners for a smooth look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
 }
+
+/* Styling for the header text */
 .admin-header h1 {
-  font-size: 2rem; /* Slightly smaller for balance */
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0;
+  font-size: 1.8rem; /* Sets the font size slightly smaller */
+  font-weight: bold; /* Makes the text bold */
+  text-transform: uppercase; /* Converts text to uppercase */
+  letter-spacing: 1px; /* Adds spacing between letters for better readability */
+  margin: 0; /* Removes default margin to keep spacing consistent */
 }
+
+/* Styling for the review users box (container for the table) */
+.review-users-box {
+  width: 90%; /* Ensures the box takes up 90% of the available width */
+  max-width: 1000px; /* Limits the maximum width to prevent excessive stretching */
+  padding: 15px; /* Adds padding inside the box */
+  text-align: center; /* Centers the content inside */
+  background: white; /* Sets the background color to white */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
+  border-radius: 8px; /* Rounds the corners */
+  overflow-x: auto; /* Enables horizontal scrolling if needed */
+  margin: 20px auto; /* Centers the box horizontally */
+}
+
+/* Table styling inside the review-users-box */
+.review-users-box table {
+  width: 100%; /* Ensures the table stretches to fill the box */
+  border-collapse: collapse; /* Removes spacing between borders */
+  table-layout: fixed; /* Ensures equal column width */
+}
+
+/* Styling for table headers */
+.review-users-box th {
+  background-color: #007bff; /* Blue background for headers */
+  color: white; /* White text color */
+  padding: 8px; /* Adds padding for better readability */
+  text-align: center; /* Centers the text in the headers */
+  border: 1px solid #ddd; /* Adds a light border around each header */
+  white-space: nowrap; /* Prevents the headers from wrapping to multiple lines */
+}
+
+/* Styling for table data cells */
+.review-users-box td {
+  padding: 8px; /* Adds padding for spacing */
+  border: 1px solid #ddd; /* Adds a light border around each cell */
+  text-align: center; /* Centers the text */
+  word-wrap: break-word; /* Ensures long text wraps inside the cell */
+}
+
+/* Alternating row colors for better readability */
+.review-users-box tr:nth-child(even) {
+  background-color: #f9f9f9; /* Light gray background for even rows */
+}
+
+/* Search box container */
+.search-container {
+  display: flex; /* Enables flexbox for better layout */
+  align-items: center; /* Aligns items vertically */
+  border: 2px solid #ccc; /* Adds a gray border */
+  border-radius: 25px; /* Rounds the edges of the search box */
+  padding: 5px 10px; /* Adds padding inside the search box */
+  width: 280px; /* Sets the width */
+  margin: 0 0 10px 0; /* Centers the search box and adds space below */
+}
+
+/* Search input field */
+.search-container input {
+  border: none; /* Removes the default border */
+  outline: none; /* Removes the focus outline */
+  width: 100%; /* Ensures the input fills the container */
+  padding: 6px; /* Adds padding inside the input field */
+}
+
+/* Search button */
+.search-container button {
+  background: #007bff; /* Sets background color to blue */
+  color: white; /* Sets text color to white */
+  border: none; /* Removes the border */
+  padding: 6px 12px; /* Adds padding for better appearance */
+  cursor: pointer; /* Changes cursor to pointer on hover */
+  border-radius: 15px; /* Rounds the button edges */
+}
+
+/* Hover effect for the search button */
+.search-container button:hover {
+  background: #0056b3; /* Darkens the button on hover */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .review-users-box {
+    width: 95%; /* Makes the box slightly wider on small screens */
+    padding: 10px; /* Reduces padding */
+  }
+  .search-container {
+    width: 100%; /* Makes the search box fill the width */
+  }
+}
+
 
 
 
@@ -90,37 +165,98 @@
 
 
 /* Individual Box Styling ************************************/
-.admin-box {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 16px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+/* Wrap search and admin boxes in a flex container */
+/* Flexbox container for search box and admin boxes */
+.admin-panel-top {
+  display: flex; /* Enables flexbox */
+  justify-content: space-between; /* Aligns elements in a row */
+  align-items: center; /* Aligns items vertically */
+  width: 100%; /* Ensures full width */
+  max-width: 1000px; /* Prevents excessive stretching */
+  margin: 0 auto 20px; /* Centers the section */
 }
 
+/* Search box styling */
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  padding: 5px 10px;
+  width: 250px; /* Smaller width */
+}
+
+/* Admin boxes container (aligned next to each other) */
+.admin-boxes {
+  display: flex; /* Enables flexbox */
+  flex-direction: row; /* Aligns boxes in a row */
+  gap: 10px; /* Adds space between boxes */
+  justify-content:flex-end ;
+  width: 100%;
+  padding-left: 25rem;
+}
+
+/* Hide the paragraph by default */
+.admin-box p {
+  font-size: 0.9rem; /* Smaller text */
+  color: #080808;
+  margin: 0;
+  opacity: 0; /* Initially hidden */
+  position: absolute; /* Allows positioning outside the box */
+  left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Align center properly */
+  top: 110%; /* Position below the box */
+  white-space: nowrap; /* Prevent text wrapping */
+  background: white; /* Add background for visibility */
+  padding: 5px 10px; /* Add spacing */
+  border-radius: 5px; /* Smooth rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Light shadow effect */
+  transition: opacity 0.3s ease-in-out; /* Smooth fade-in effect */
+  pointer-events: none; /* Prevents interaction issues */
+}
+
+/* Ensure the container has relative positioning */
+.admin-box {
+  position: relative; /* Required for absolute positioning of the text */
+  display: inline-block; /* Keeps the box size fixed */
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  width: 150px;
+  text-align: center;
+}
+
+/* Show the paragraph when hovering over the box */
+.admin-box:hover p {
+  opacity: 1; /* Make text fully visible */
+}
+
+
 .admin-box:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .admin-box h2 {
-  margin-bottom: 15px;
+  font-size: 1rem; /* Smaller font size */
+  margin-bottom: 5px;
   color: #007bff;
 }
 
-.admin-box p {
-  color: #080808;
-}
 
-/* Responsive Design */
+/* Responsive Design: Adjust layout for smaller screens */
 @media screen and (max-width: 768px) {
+  .admin-panel-top {
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center them */
+  }
+
   .admin-boxes {
-    grid-template-columns: 1fr;
+    flex-direction: column; /* Stack boxes vertically on small screens */
+    align-items: center;
   }
 }
-
-
 
 
 
@@ -232,51 +368,6 @@
 }
 
 
-/* Review Users Modal Styling ************************************/
-/* Make Review Users table always visible */
-.review-users-box {
-  width: 600px;
-  padding: 20px;
-  text-align: center;
-  background: white;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow-x: auto;
-  margin-top: 10px;
-}
-
-/* Ensure table fills the box properly */
-.review-users-box table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-/* Table header */
-.review-users-box th {
-  background-color: #007bff;
-  color: white;
-  padding: 10px;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-
-/* Table rows */
-.review-users-box td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
-/* Alternating row colors for better readability */
-.review-users-box tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-/* Hover effect */
-.review-users-box tr:hover {
-  background-color: #f1f1f1;
-}
 
 /* Align forms properly */
 .admin-boxes {
@@ -322,30 +413,3 @@
   height: auto;
   border-radius: 10px; /* Optional: Smooth corners */
 }
-/* Serch box */
-.search-container {
-  display: flex;
-  align-items: center;
-  border: 2px solid #ccc;
-  border-radius: 25px;
-  padding: 5px 10px;
-  width: 250px;
-}
-.search-container input {
-  border: none;
-  outline: none;
-  width: 100%;
-  padding: 5px;
-}
-.search-container button {
-  background: #007BFF;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 15px;
-}
-.search-container button:hover {
-  background: #0056b3;
-}
-

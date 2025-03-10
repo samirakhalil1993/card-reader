@@ -11,37 +11,39 @@
 
 <body>
 <!-- Admin Dashboard amer --> 
-  <div class="admin-panel">
-    <header class="admin-header">
+<div class="admin-panel">
+  <header class="admin-header">
       <h1><i class="fas fa-user-shield"></i> Student Access Control</h1>
-    </header>
+  </header>
 
-
-    <div class="admin-boxes">
-      <!-- Add User Box -->
-      <div class="admin-box" id="addUserBox">
-        <h2>Add User</h2>
-        <p>Click here to add new users.</p>
-        <!-- Hidden Add User Form -->
-      </div>
-
-      
-      
-      <div class="admin-box" id="removeUserBox">
-        <h2>Remove User</h2>
-        <p>Click here to remove existing users.</p>
-      </div>
-      
-      <!-- Center: Review Users -->
-    <div class="review-users-box">
-      <h2>Review Users</h2>
+  <!-- Flex container for search box and admin boxes -->
+  <div class="admin-panel-top">
       <!-- Search box wrapped in a form -->
       <form id="searchForm">
-        <div class="search-container" id="search-container">
-          <input type="text" placeholder="Search..." name="search">
-          <button type="submit">🔍</button>
-        </div>
+          <div class="search-container" id="search-container">
+              <input type="text" placeholder="Search..." name="search">
+              <button type="submit">🔍</button>
+          </div>
       </form>
+
+      <!-- Admin Boxes Container -->
+      <div class="admin-boxes">
+          <!-- Add User Box -->
+          <div class="admin-box" id="addUserBox">
+              <h2>Add User</h2>
+              <p>Click here to add new users.</p>
+          </div>
+
+          <!-- Remove User Box -->
+          <div class="admin-box" id="removeUserBox">
+              <h2>Remove User</h2>
+              <p>Click here to remove existing users.</p>
+          </div>
+      </div>
+  </div>
+
+  <!-- Review Users Section -->
+  <div class="review-users-box">
       <table id="usersTable">
           <thead>
               <tr>
@@ -63,22 +65,24 @@
           </tbody>
       </table>
   </div>
+</div>
 
+  
 
-<!-- Hidden Forms -->
-<form class="add-user-form" id="addUserForm"> 
-  <input type="text" name="name" placeholder="User Name" required />
-  <input type="email" name="email" placeholder="User Email" required />
-  <input type="text" name="user_id" placeholder="User ID" required />
-  <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
-  <button type="submit">Add User</button>
-</form>
+  <!-- Hidden Forms -->
+  <form class="add-user-form" id="addUserForm"> 
+    <input type="text" name="name" placeholder="User Name" required />
+    <input type="email" name="email" placeholder="User Email" required />
+    <input type="text" name="user_id" placeholder="User ID" required />
+    <input type="text" name="swipe_card" placeholder="Swipe Card Data" required />
+    <button type="submit">Add User</button>
+  </form>
 
-<form class="remove-user-form" id="removeUserForm">
-  <input type="text" name="user_id" placeholder="User ID" required />
-  <input type="text" name="user_email" placeholder="User Email" required />
-  <button type="submit">Remove User</button>
-</form>
+  <form class="remove-user-form" id="removeUserForm">
+    <input type="text" name="user_id" placeholder="User ID" required />
+    <input type="text" name="user_email" placeholder="User Email" required />
+    <button type="submit">Remove User</button>
+  </form>
   <footer class="admin-footer">
     <p>© 2024 University Computer Access System | All rights reserved.</p>
   </footer>
