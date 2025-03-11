@@ -96,6 +96,15 @@
   word-wrap: break-word; /* Ensures long text wraps inside the cell */
 }
 
+/* Add specific styling for the program column */
+.review-users-box th:nth-child(4),
+.review-users-box td:nth-child(4) {
+  text-align: center; /* Center the text */
+  padding: 8px; /* Add padding for spacing */
+  border: 1px solid #ddd; /* Add a light border around each cell */
+  word-wrap: break-word; /* Ensure long text wraps inside the cell */
+}
+
 /* Alternating row colors for better readability */
 .review-users-box tr:nth-child(even) {
   background-color: #f9f9f9; /* Light gray background for even rows */
@@ -146,9 +155,6 @@
   }
 }
 
-
-
-
 /* Box Container *************************************************************************************************************/
 .admin-boxes {
   display: flex;
@@ -162,7 +168,6 @@
   width: 280px; /* Consistent box size */
   text-align: center;
 }
-
 
 /* Individual Box Styling ************************************/
 /* Wrap search and admin boxes in a flex container */
@@ -232,7 +237,6 @@
   opacity: 1; /* Make text fully visible */
 }
 
-
 .admin-box:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
@@ -243,7 +247,6 @@
   margin-bottom: 5px;
   color: #007bff;
 }
-
 
 /* Responsive Design: Adjust layout for smaller screens */
 @media screen and (max-width: 768px) {
@@ -266,10 +269,6 @@
 #usersTable tbody tr:hover {
   background-color: #ffcccc; /* Light red to indicate delete action */
 }
-
-
-
-
 
 /* Add User Form Styling ****************************************************************************************/
 .add-user-form {
@@ -300,11 +299,13 @@
   z-index: 999;
 }
 
-
-.add-user-form input {
+.add-user-form input,
+.add-user-form select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 16px; /* Increase font size */
+  width: 100%; /* Ensure full width */
 }
 
 .add-user-form button {
@@ -314,6 +315,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px; /* Increase font size */
 }
 
 .add-user-form button:hover {
@@ -375,8 +377,6 @@
   z-index: 999;
 }
 
-
-
 /* Align forms properly */
 .admin-boxes {
   display: flex;
@@ -399,18 +399,12 @@
   font-size: 0.9rem;
 }
 
-
-
 /* Centering the image below the boxes **************************/
 .image-container {
   text-align: center;
   margin-top: 70px;
   overflow: hidden; /* Hides extra pixels */
-
-  
-  
-
-  }
+}
 
 /* Make the image responsive */
 .dashboard-image {

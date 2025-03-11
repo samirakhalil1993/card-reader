@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
 from models import db, User
 from sqlalchemy.exc import IntegrityError
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS to allow cross-origin requests
@@ -13,6 +14,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin@admin-panel-ser
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
 # Ensure Database Tables Exist
 with app.app_context():
     db.create_all()
@@ -21,6 +25,11 @@ with app.app_context():
 def validate_personnummer(personnummer):
     """Ensure Personnummer is in YYYYMMDDXXXX or YYYYMMDD-XXXX format."""
     return re.match(r'^\d{8}[-]?\d{4}$', personnummer) is not None
+
+# Function to validate BTH email
+def validate_bth_email(email):
+    """Ensure email is a BTH email address."""
+    return email.endswith('@student.bth.se')
 
 # Render Home Page
 @app.route('/')
@@ -57,11 +66,19 @@ def add_user():
         if not validate_personnummer(data['user_id']):
             return jsonify({"error": "Invalid Personnummer format. Use YYYYMMDDXXXX or YYYYMMDD-XXXX."}), 400
 
+        # Validate BTH email
+        if not validate_bth_email(data['email']):
+            return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
+
+        # Set default program if not provided
+        program = data.get('program', 'Unknown')
+
         # Create a new user
         new_user = User(
             name=data['name'],
             email=data['email'],
-            user_id=data['user_id']  # Now stores Swedish Personnummer
+            user_id=data['user_id'],  # Now stores Swedish Personnummer
+            program=program   # Store the BTH program
         )
 
         # Add and commit to the database
@@ -94,9 +111,6 @@ def remove_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
 # API: Search User by Name
 @app.route('/review_users', methods=['GET'])
 def review_users():
@@ -107,7 +121,7 @@ def review_users():
         users = User.query.all()
 
     # Remove "swipe_card" and return only the required fields
-    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id} for user in users]
+    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program} for user in users]
     return jsonify(users_list)
 
 # Run Flask App

@@ -50,6 +50,7 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>User ID</th>
+                  <th>Program</th> <!-- Add Program column header -->
               </tr>
           </thead>
           <tbody>
@@ -58,6 +59,7 @@
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.user_id }}</td>
+                  <td>{{ user.program }}</td> <!-- Add Program column data -->
               </tr>
               {% endfor %}
           </tbody>
@@ -70,8 +72,18 @@
   <!-- Hidden Forms -->
   <form class="add-user-form" id="addUserForm"> 
     <input type="text" name="name" placeholder="User Name" required />
-    <input type="email" name="email" placeholder="User Email" required />
+    <input type="email" name="email" placeholder="User Email (must be @student.bth.se)" required />
     <input type="text" name="user_id" placeholder="User ID" required />
+    <select name="program" required>
+        <option value="" disabled selected>Select Program</option>
+        <option value="Software Engineering">Software Engineering</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Mechanical Engineering">Mechanical Engineering</option>
+        <option value="Data Security">Data Security</option>
+        <option value="Game technology">Game technology</option>
+        <option value="AI and Machine Learning">AI and Machine Learning</option>
+        <!-- Add more programs as needed -->
+    </select>
     <button type="submit">Add User</button>
   </form>
 
