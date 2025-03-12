@@ -155,6 +155,12 @@
   }
 }
 
+@media (max-width: 600px){
+  .admin-header h1 {
+    font-size: 1.4rem;
+  }
+
+}
 /* Box Container *************************************************************************************************************/
 .admin-boxes {
   display: flex;
@@ -203,13 +209,14 @@
 
 /* Hide the paragraph by default */
 .admin-box p {
+  width: 100%;
   font-size: 0.9rem; /* Smaller text */
   color: #080808;
   margin: 0;
   opacity: 0; /* Initially hidden */
   position: absolute; /* Allows positioning outside the box */
-  left: 50%; /* Center it horizontally */
-  transform: translateX(-50%); /* Align center properly */
+  left: 0; /* Center it horizontally */
+  transform: none; /* Align center properly */
   top: 110%; /* Position below the box */
   white-space: nowrap; /* Prevent text wrapping */
   background: white; /* Add background for visibility */
@@ -267,126 +274,150 @@
 }
 
 #usersTable tbody tr:hover {
-  background-color: #ffcccc; /* Light red to indicate delete action */
+  background-color: #e9ecef; /* Softer hover color */
 }
 
 /* Add User Form Styling ****************************************************************************************/
-.add-user-form {
-  display: none; /* Initially hidden */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  z-index: 1000;
-  width: 400px;
+.add-user-form,
+.remove-user-form,
+.update-user-form {
+  display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
-/* Overlay Background */
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+.add-user-form h2,
+.remove-user-form h2,
+.update-user-form h2 {
+  color: #007bff;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
 }
 
 .add-user-form input,
-.add-user-form select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px; /* Increase font size */
-  width: 100%; /* Ensure full width */
+.add-user-form select,
+.remove-user-form input,
+.update-user-form input,
+.update-user-form select {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
 }
 
-.add-user-form button {
-  padding: 10px;
-  background-color: #28a745;
+.add-user-form input:focus,
+.add-user-form select:focus,
+.remove-user-form input:focus,
+.update-user-form input:focus,
+.update-user-form select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.update-user-form input[readonly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.add-user-form button,
+.remove-user-form button,
+.update-user-form button {
+  padding: 12px;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px; /* Increase font size */
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
-.add-user-form button:hover {
-  background-color: #218838;
+.add-user-form button:hover,
+.remove-user-form button:hover,
+.update-user-form button:hover {
+  background-color: #0056b3;
 }
 
-/* Remove User Form Styling ********************************************************************************/
-.remove-user-form {
-  display: none; /* Initially hidden */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  z-index: 1000;
-  width: 300px;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Input Fields */
-.remove-user-form input {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Remove Button */
-.remove-user-form button {
-  padding: 10px;
-  width: 100%;
+/* Delete Button */
+.delete-button {
   background-color: #dc3545;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
+  margin-top: 10px;
+  padding: 12px;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
-.remove-user-form button:hover {
+.delete-button:hover {
   background-color: #c82333;
 }
 
-/* Overlay Background */
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    margin: 20% auto;
+    padding: 20px;
+  }
+
+  .add-user-form input,
+  .add-user-form select,
+  .add-user-form button,
+  .remove-user-form input,
+  .remove-user-form button,
+  .update-user-form input,
+  .update-user-form select,
+  .update-user-form button {
+    padding: 10px;
+  }
 }
 
-/* Align forms properly */
-.admin-boxes {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  max-width: 1100px;
-  margin: 0 auto;
-  flex-wrap: wrap;
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
 }
-/***************************************************************************/
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 25px;
+  border: 1px solid #888;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: #333;
+}
 
 .admin-footer {
   text-align: center;
@@ -397,21 +428,4 @@
   bottom: 0;
   width: 100%;
   font-size: 0.9rem;
-}
-
-/* Centering the image below the boxes **************************/
-.image-container {
-  text-align: center;
-  margin-top: 70px;
-  overflow: hidden; /* Hides extra pixels */
-}
-
-/* Make the image responsive */
-.dashboard-image {
-  display: block;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  border-radius: 10px; /* Optional: Smooth corners */
 }

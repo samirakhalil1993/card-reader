@@ -89,7 +89,7 @@ def add_user():
 
     except IntegrityError:
         db.session.rollback()  # Rollback if there is a duplicate entry
-        return jsonify({"error": "User with this email or Personnummer already exists!"}), 400
+        return jsonify({"error": "User with this email or UserID already exists!"}), 400
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Always return a valid JSON response
@@ -123,6 +123,50 @@ def review_users():
     # Remove "swipe_card" and return only the required fields
     users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program} for user in users]
     return jsonify(users_list)
+
+# Add this new route after your existing routes
+@app.route('/update_user', methods=['POST'])
+def update_user():
+    try:
+        # Get user data from request
+        data = request.get_json()
+        user_id = data.get('user_id')
+        
+        # Find the user
+        user = User.query.filter_by(user_id=user_id).first()
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        # Validate BTH email if email is being changed
+        if data.get('email') != user.email and not validate_bth_email(data['email']):
+            return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
+            
+        # Update user information
+        user.name = data.get('name', user.name)
+        user.email = data.get('email', user.email)
+        user.program = data.get('program', user.program)
+        
+        # Commit changes to database
+        db.session.commit()
+        
+        return jsonify({
+            "message": "User updated successfully",
+            "user": {
+                "name": user.name,
+                "email": user.email,
+                "user_id": user.user_id,
+                "program": user.program
+            }
+        }), 200
+        
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "Email already exists for another user"}), 400
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 # Run Flask App
 if __name__ == '__main__':

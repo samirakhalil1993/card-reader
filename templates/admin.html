@@ -6,7 +6,7 @@
   <title>Admin Panel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='backend.js') }}"></script>
+  <script src="{{ url_for('static', filename='backend.js') }}" defer></script>
 </head>
 
 <body>
@@ -31,13 +31,13 @@
           <!-- Add User Box -->
           <div class="admin-box" id="addUserBox">
               <h2>Add User</h2>
-              <p>Click here to add new users.</p>
+              <p>Add new users.</p>
           </div>
 
           <!-- Remove User Box -->
           <div class="admin-box" id="removeUserBox">
               <h2>Remove User</h2>
-              <p>Click here to remove existing users.</p>
+              <p>Remove existing users.</p>
           </div>
       </div>
   </div>
@@ -67,42 +67,69 @@
   </div>
 </div>
 
-  
+<!-- Add User Modal -->
+<div id="addUserModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form class="add-user-form" id="addUserForm"> 
+      <h2>Add User</h2>
+      <input type="text" name="name" placeholder="User Name" required />
+      <input type="email" name="email" placeholder="User Email (must be @student.bth.se)" required />
+      <input type="text" name="user_id" placeholder="User ID" required />
+      <select name="program" required>
+          <option value="" disabled selected>Select Program</option>
+          <option value="Software Engineering">Software Engineering</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Data Security">Data Security</option>
+          <option value="Game technology">Game technology</option>
+          <option value="AI and Machine Learning">AI and Machine Learning</option>
+          <!-- Add more programs as needed -->
+      </select>
+      <button type="submit">Add User</button>
+    </form>
+  </div>
+</div>
 
-  <!-- Hidden Forms -->
-  <form class="add-user-form" id="addUserForm"> 
-    <input type="text" name="name" placeholder="User Name" required />
-    <input type="email" name="email" placeholder="User Email (must be @student.bth.se)" required />
-    <input type="text" name="user_id" placeholder="User ID" required />
-    <select name="program" required>
-        <option value="" disabled selected>Select Program</option>
-        <option value="Software Engineering">Software Engineering</option>
-        <option value="Computer Science">Computer Science</option>
-        <option value="Mechanical Engineering">Mechanical Engineering</option>
-        <option value="Data Security">Data Security</option>
-        <option value="Game technology">Game technology</option>
-        <option value="AI and Machine Learning">AI and Machine Learning</option>
-        <!-- Add more programs as needed -->
-    </select>
-    <button type="submit">Add User</button>
-  </form>
+<!-- Remove User Modal -->
+<div id="removeUserModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form class="remove-user-form" id="removeUserForm">
+      <h2>Remove User</h2>
+      <input type="text" name="user_id" placeholder="User ID" required />
+      <input type="text" name="user_email" placeholder="User Email" required />
+      <button type="submit">Remove User</button>
+    </form>
+  </div>
+</div>
 
-  <form class="remove-user-form" id="removeUserForm">
-    <input type="text" name="user_id" placeholder="User ID" required />
-    <input type="text" name="user_email" placeholder="User Email" required />
-    <button type="submit">Remove User</button>
-  </form>
-  <footer class="admin-footer">
-    <p>© 2024 University Computer Access System | All rights reserved.</p>
-  </footer>
+<!-- Update User Modal -->
+<div id="updateUserModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form class="update-user-form" id="updateUserForm">
+      <h2>Update User Information</h2>
+      <input type="text" name="name" id="updateName" placeholder="User Name" required />
+      <input type="email" name="email" id="updateEmail" placeholder="User Email" required />
+      <input type="text" name="user_id" id="updateUserId" placeholder="User ID" required readonly />
+      <select name="program" id="updateProgram" required>
+          <option value="" disabled>Select Program</option>
+          <option value="Software Engineering">Software Engineering</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Data Security">Data Security</option>
+          <option value="Game technology">Game technology</option>
+          <option value="AI and Machine Learning">AI and Machine Learning</option>
+      </select>
+      <button type="submit">Update User</button>
+      <button type="button" id="deleteUserButton" class="delete-button">Delete User</button>
+    </form>
+  </div>
+</div>
 
-  <!-- Inline JavaScript for Showing Form -->
-  <script>
-    // Show the add user form when clicking the Add User box
-    document.getElementById('addUserBox').addEventListener('click', function () {
-      const form = document.getElementById('addUserForm');
-      form.style.display = 'flex'; // Display the form when clicked
-    });
-  </script>
+<footer class="admin-footer">
+  <p>© 2024 University Computer Access System | All rights reserved.</p>
+</footer>
 </body>
 </html>
