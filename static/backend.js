@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeButtonAdd = addUserModal.querySelector(".close");
     const closeButtonRemove = removeUserModal.querySelector(".close");
     const deleteUserButton = document.getElementById("deleteUserButton");
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = searchForm.elements["search"];
 
     // Show the add user form when clicking the Add User box
     document.getElementById('addUserBox').addEventListener('click', function () {
@@ -68,6 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fetch all users when the page loads
     fetchUsers();
+
+    // Handle search input event
+    searchInput.addEventListener("input", function(event) {
+        const searchTerm = searchInput.value;
+        fetchUsers(searchTerm);
+    });
 
     addUserForm.addEventListener("submit", async function (event) {
         event.preventDefault();
