@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to validate BTH email
     function validateBthEmail(email) {
-        return email.endsWith('@student.bth.se');
+        const regex = /^[a-zA-Z]{4}\d{2}@student\.bth\.se$/;
+        return regex.test(email);
     }
 
     // Function to fetch users and update the table
