@@ -111,6 +111,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.insertCell(1).textContent = formData.email;
                 row.insertCell(2).textContent = formData.user_id;
                 row.insertCell(3).textContent = formData.program; // Add program to the table
+
+                // Add click event for updating
+                row.addEventListener("click", function(e) {
+                    e.preventDefault(); // Prevent any default action
+                    e.stopPropagation(); // Stop event bubbling
+                    
+                    // Populate form fields
+                    document.getElementById("updateName").value = formData.name;
+                    document.getElementById("updateEmail").value = formData.email;
+                    document.getElementById("updateUserId").value = formData.user_id;
+                    document.getElementById("updateProgram").value = formData.program;
+                    
+                    // Display the modal
+                    updateModal.style.display = "block";
+                });
+
                 addUserForm.reset();
                 addUserModal.style.display = "none"; // Close the modal
             } else {

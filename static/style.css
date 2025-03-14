@@ -342,8 +342,10 @@
 }
 
 /* Delete Button */
-.delete-button {
-  background-color: #dc3545;
+.add-user-form .delete-button,
+.remove-user-form .delete-button,
+.update-user-form .delete-button {
+  background-color: #dc3545; /* Red background color */
   color: white;
   border: none;
   border-radius: 6px;
@@ -356,8 +358,15 @@
   transition: background-color 0.3s ease;
 }
 
-.delete-button:hover {
-  background-color: #c82333;
+.add-user-form .delete-button:hover,
+.remove-user-form .delete-button:hover,
+.update-user-form .delete-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+/* Delete Text */
+.delete-text {
+  color: #dc3545 !important; /* Red text color with !important to override other styles */
 }
 
 /* Responsive adjustments */
