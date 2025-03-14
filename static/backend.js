@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Show confirmation dialog
         const confirmed = confirm("Are you sure you want to delete this user?");
         if (!confirmed) {
-            return; // Exit if the user cancels the deletion
+            return; // Exit if the user cancels the deletion.
         }
 
         const formData = {
