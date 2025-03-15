@@ -156,8 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
     removeUserForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         const formData = {
-            user_id: removeUserForm.elements["user_id"].value,
-            user_email: removeUserForm.elements["user_email"].value
+            user_id: removeUserForm.elements["user_id"].value
         };
 
         // Show confirmation dialog
@@ -254,7 +253,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle archive user button click in the update modal
     document.getElementById("archiveUserButton").addEventListener("click", async function() {
         const userId = document.getElementById("updateUserId").value;
-        const userEmail = document.getElementById("updateEmail").value;
 
         // Show confirmation dialog
         const action = archiveUserButton.textContent === "Archive User" ? "archive" : "reactivate";
@@ -264,8 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const formData = {
-            user_id: userId,
-            user_email: userEmail
+            user_id: userId
         };
 
         const endpoint = action === "archive" ? "/archive_user" : "/reactivate_user";

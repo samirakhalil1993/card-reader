@@ -2,9 +2,13 @@ import os
 import re
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
-from models import db, User
+from models import db, User, cipher_suite
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+
+# Load environment variables from .env file....
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS to allow cross-origin requests
@@ -77,9 +81,9 @@ def add_user():
         new_user = User(
             name=data['name'],
             email=data['email'],
-            user_id=data['user_id'],  # Now stores Swedish Personnummer
             program=program   # Store the BTH program
         )
+        new_user.user_id = data['user_id']  # Set the user_id using the hybrid property
 
         # Add and commit to the database
         db.session.add(new_user)
@@ -99,7 +103,13 @@ def add_user():
 def remove_user():
     try:
         data = request.get_json()
-        user = User.query.filter_by(user_id=data['user_id'], email=data['user_email']).first()
+        user_id = data['user_id']
+
+        # Encrypt the user_id to match the stored encrypted_user_id
+        encrypted_user_id = cipher_suite.encrypt(user_id.encode()).decode()
+
+        # Find the user by encrypted_user_id
+        user = User.query.filter_by(_user_id=encrypted_user_id).first()
 
         if user:
             db.session.delete(user)
