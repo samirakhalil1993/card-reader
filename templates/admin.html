@@ -26,6 +26,12 @@
           </div>
       </form>
 
+      <!-- Add filter buttons -->
+      <div class="filter-buttons">
+        <button id="showActiveUsers" class="filter-button">Show Active Users</button>
+        <button id="showArchivedUsers" class="filter-button">Show Archived Users</button>
+      </div>
+
       <!-- Admin Boxes Container -->
       <div class="admin-boxes">
           <!-- Add User Box -->
@@ -34,10 +40,10 @@
               <p>Add new users.</p>
           </div>
 
-          <!-- Remove User Box -->
+          <!-- Archive User Box -->
           <div class="admin-box" id="removeUserBox">
-              <h2 class="delete-text">Remove User</h2> <!-- Add class 'delete-text' -->
-              <p>Remove existing users.</p>
+              <h2 class="delete-text">Archive User</h2> <!-- Add class 'delete-text' -->
+              <p>Archive existing users.</p>
           </div>
       </div>
   </div>
@@ -50,7 +56,8 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>User ID</th>
-                  <th>Program</th> <!-- Add Program column header -->
+                  <th>Program</th>
+                  <th>Status</th> <!-- Add Status column header -->
               </tr>
           </thead>
           <tbody>
@@ -59,7 +66,8 @@
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.user_id }}</td>
-                  <td>{{ user.program }}</td> <!-- Add Program column data -->
+                  <td>{{ user.program }}</td>
+                  <td>{{ 'Active' if user.is_active else 'Archived' }}</td> <!-- Add Status column data -->
               </tr>
               {% endfor %}
           </tbody>
@@ -91,15 +99,15 @@
   </div>
 </div>
 
-<!-- Remove User Modal -->
+<!-- Archive User Modal -->
 <div id="removeUserModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <form class="remove-user-form" id="removeUserForm">
-      <h2>Remove User</h2>
+      <h2>Archive User</h2>
       <input type="text" name="user_id" placeholder="User ID" required />
       <input type="text" name="user_email" placeholder="User Email" required />
-      <button type="submit" class="delete-button">Remove User</button> <!-- Add class 'delete-button' -->
+      <button type="submit" class="delete-button">Archive User</button>
     </form>
   </div>
 </div>
@@ -123,7 +131,7 @@
           <option value="AI and Machine Learning">AI and Machine Learning</option>
       </select>
       <button type="submit">Update User</button>
-      <button type="button" id="deleteUserButton" class="delete-button">Delete User</button>
+      <button type="button" id="archiveUserButton" class="delete-button">Archive User</button>
     </form>
   </div>
 </div>

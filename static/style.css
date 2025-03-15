@@ -6,6 +6,13 @@
   font-family: 'Arial', sans-serif;
 }
 
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
 /* Login Page Styling ***********************************/
 .login-container {
   background-color: #f5f5f5;
@@ -41,17 +48,18 @@
 
 /* Styling for the admin header *****************************************************************************************************************************/
 .admin-header {
+  text-align: center;
+  margin-bottom: 20px;
   background: linear-gradient(90deg, #007bff, #0056b3); /* Blue gradient background */
-  text-align: center; /* Centers the text */
   padding: 10px 0; /* Adjusts the vertical padding to reduce header height */
-  margin-bottom: 20px; /* Adds space below the header */
   border-radius: 8px; /* Rounds the corners for a smooth look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
 }
 
 /* Styling for the header text */
 .admin-header h1 {
-  font-size: 1.8rem; /* Sets the font size slightly smaller */
+  font-size: 2em;
+  color: #007bff;
   font-weight: bold; /* Makes the text bold */
   text-transform: uppercase; /* Converts text to uppercase */
   letter-spacing: 1px; /* Adds spacing between letters for better readability */
@@ -60,13 +68,14 @@
 
 /* Styling for the review users box (container for the table) */
 .review-users-box {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 20px;
   width: 90%; /* Ensures the box takes up 90% of the available width */
   max-width: 1000px; /* Limits the maximum width to prevent excessive stretching */
-  padding: 15px; /* Adds padding inside the box */
   text-align: center; /* Centers the content inside */
-  background: white; /* Sets the background color to white */
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
-  border-radius: 8px; /* Rounds the corners */
   overflow-x: auto; /* Enables horizontal scrolling if needed */
   margin: 20px auto; /* Centers the box horizontally */
 }
@@ -76,6 +85,11 @@
   width: 100%; /* Ensures the table stretches to fill the box */
   border-collapse: collapse; /* Removes spacing between borders */
   table-layout: fixed; /* Ensures equal column width */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 /* Styling for table headers */
@@ -88,6 +102,11 @@
   white-space: nowrap; /* Prevents the headers from wrapping to multiple lines */
 }
 
+th {
+  background-color: #007bff;
+  color: white;
+}
+
 /* Styling for table data cells */
 .review-users-box td {
   padding: 8px; /* Adds padding for spacing */
@@ -96,9 +115,24 @@
   word-wrap: break-word; /* Ensures long text wraps inside the cell */
 }
 
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
 /* Add specific styling for the program column */
 .review-users-box th:nth-child(4),
 .review-users-box td:nth-child(4) {
+  text-align: center; /* Center the text */
+  padding: 8px; /* Add padding for spacing */
+  border: 1px solid #ddd; /* Add a light border around each cell */
+  word-wrap: break-word; /* Ensure long text wraps inside the cell */
+}
+
+/* Add specific styling for the fifth column */
+.review-users-box th:nth-child(5),
+.review-users-box td:nth-child(5) {
   text-align: center; /* Center the text */
   padding: 8px; /* Add padding for spacing */
   border: 1px solid #ddd; /* Add a light border around each cell */
@@ -164,13 +198,22 @@
 /* Box Container *************************************************************************************************************/
 .admin-boxes {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  margin-bottom: 20px;
   gap: 30px;  /* More spacing */
   max-width: 900px; /* Keeps it structured */
   margin: 0 auto;
   flex-wrap: wrap;
 }
 .admin-box {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  width: 45%;
+  cursor: pointer;
+  transition: background-color 0.3s;
   width: 280px; /* Consistent box size */
   text-align: center;
 }
@@ -247,6 +290,7 @@
 .admin-box:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #f1f1f1;
 }
 
 .admin-box h2 {
@@ -392,40 +436,60 @@
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: #ffffff;
   margin: 15% auto;
-  padding: 25px;
-  border: 1px solid #888;
-  width: 90%;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  width: 80%;
   max-width: 500px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
 }
 
 .close {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  color: #aaa;
+  color: #aaaaaa;
+  float: right;
   font-size: 28px;
   font-weight: bold;
-  cursor: pointer;
-  transition: color 0.3s ease;
 }
 
-.close:hover {
-  color: #333;
+.close:hover,
+.close:focus {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button.delete-button {
+  background-color: #dc3545;
+}
+
+button.delete-button:hover {
+  background-color: #c82333;
 }
 
 .admin-footer {
@@ -437,4 +501,29 @@
   bottom: 0;
   width: 100%;
   font-size: 0.9rem;
+}
+
+.filter-buttons {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.filter-button:hover {
+  background-color: #0056b3;
+}
+
+.filter-button.active {
+  background-color: #0056b3;
+  color: white;
 }

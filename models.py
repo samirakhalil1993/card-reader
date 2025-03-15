@@ -21,7 +21,10 @@ class User(db.Model):
     user_id = db.Column(db.String(12), unique=True, nullable=False, index=True)  
 
     # Program: Stores the BTH program the user is enrolled in
-    program = db.Column(db.String(100), nullable=True)  # Make non-nullable
+    program = db.Column(db.String(100), nullable=True)  
+
+    # New column to indicate active status
+    is_active = db.Column(db.Boolean, default=True)  
 
     # Convert the User object into a dictionary for easy JSON serialization
     def to_dict(self):  
@@ -31,5 +34,6 @@ class User(db.Model):
             "name": self.name,       # Convert 'name' field
             "email": self.email,     # Convert 'email' field
             "user_id": self.user_id, # Convert 'user_id' field (Personnummer)
-            "program": self.program  # Convert 'program' field
+            "program": self.program, # Convert 'program' field
+            "is_active": self.is_active  # Include is_active in the dictionary
         }

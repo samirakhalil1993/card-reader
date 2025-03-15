@@ -114,14 +114,17 @@ def remove_user():
 # API: Search User by Name
 @app.route('/review_users', methods=['GET'])
 def review_users():
-    name = request.args.get('name')  # Get the 'name' query parameter
-    if name:
-        users = User.query.filter(User.name.ilike(f"%{name}%")).all()
-    else:
-        users = User.query.all()
+    name = request.args.get('name')
+    is_active = request.args.get('is_active', type=int)  # Get the 'is_active' query parameter
 
-    # Remove "swipe_card" and return only the required fields
-    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program} for user in users]
+    query = User.query
+    if name:
+        query = query.filter(User.name.ilike(f"%{name}%"))
+    if is_active is not None:
+        query = query.filter_by(is_active=bool(is_active))
+
+    users = query.all()
+    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program, "is_active": user.is_active} for user in users]
     return jsonify(users_list)
 
 # Add this new route after your existing routes
@@ -166,6 +169,45 @@ def update_user():
         
     except Exception as e:
         db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# Add this new route after your existing routes
+@app.route('/archive_user', methods=['POST'])
+def archive_user():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(user_id=data['user_id'], email=data['user_email']).first()
+
+        if user:
+            user.is_active = False
+            db.session.commit()
+            return jsonify({"message": f"User {user.name} ({user.user_id}) archived successfully!"}), 200
+        else:
+            return jsonify({"error": "User not found. It may have already been archived."}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/archived_users', methods=['GET'])
+def archived_users():
+    users = User.query.filter_by(is_active=False).all()
+    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program} for user in users]
+    return jsonify(users_list)
+
+@app.route('/reactivate_user', methods=['POST'])
+def reactivate_user():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(user_id=data['user_id'], email=data['user_email']).first()
+
+        if user:
+            user.is_active = True
+            db.session.commit()
+            return jsonify({"message": f"User {user.name} ({user.user_id}) reactivated successfully!"}), 200
+        else:
+            return jsonify({"error": "User not found. It may have already been reactivated."}), 404
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # Run Flask App
