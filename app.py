@@ -127,6 +127,33 @@ def archive_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# API: Reactivate User
+@app.route('/reactivate_user', methods=['POST'])
+def reactivate_user():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id').strip().replace("-", "")  # Ensure formatting
+
+        # 🔍 DEBUG: Print all stored users
+        all_users = User.query.all()
+        for user in all_users:
+            print(f"Stored User: {user.name}, Decrypted user_id: {user.user_id}")
+
+        # 🔍 Attempt to find the user
+        user = next((u for u in all_users if u.user_id == user_id), None)
+        print(f"Searching for user_id: {user_id}")
+        print(f"User found: {user}")
+
+        if user:
+            user.is_active = True
+            db.session.commit()
+            return jsonify({"message": f"User {user.name} ({user.user_id}) reactivated successfully!"}), 200
+        else:
+            return jsonify({"error": "User not found. It may have already been reactivated."}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # API: Search User by Name
 @app.route('/review_users', methods=['GET'])
 def review_users():
@@ -153,6 +180,7 @@ def update_user():
         
         # Find the user
         user = User.query.filter_by(user_id=user_id).first()
+        print(f"User found: {user}")  # Debugging statement
         
         if not user:
             return jsonify({"error": "User not found"}), 404
@@ -185,6 +213,7 @@ def update_user():
         
     except Exception as e:
         db.session.rollback()
+        print(f"Error updating user: {e}")  # Debugging statement
         return jsonify({"error": str(e)}), 500
 
 # Run Flask App
