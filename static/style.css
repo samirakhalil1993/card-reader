@@ -54,7 +54,8 @@ body {
     90deg,
     #007bff,
     #012c5a
-  ); /* Blue gradient background */
+  ); 
+  /* Blue gradient background */
   padding: 10px 0; /* Adjusts the vertical padding to reduce header height */
   border-radius: 8px; /* Rounds the corners for a smooth look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
@@ -124,8 +125,10 @@ body {
 
 /* Filter Buttons Styling *********************************************************************************************/
 .filter-buttons {
-  text-align: center;
-  margin-bottom: 20px;
+  text-align:left;
+  /*margin-bottom: 20px;*/
+  margin: 20px 149px; /* Centers the box horizontally */
+
 }
 
 .filter-button {
@@ -519,7 +522,10 @@ button.delete-button:hover {
 .admin-footer {
   text-align: center;
   padding: 15px;
-  background: #007bff;
+  background: linear-gradient(
+    90deg,
+    #007bff,
+    #012c5a);
   color: white;
   position: fixed;
   bottom: 0;
