@@ -185,6 +185,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    removeUserForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(removeUserForm);
+        const userId = formData.get("user_id");
+
+        try {
+            const response = await fetch("/archive_user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+            } else {
+                alert(result.error);
+            }
+        } catch (error) {
+            console.error("Error archiving user:", error);
+            alert("An error occurred while archiving the user.");
+        }
+    });
+
     // Close modal when clicking (×) button
     closeButtonUpdate.onclick = function() {
         updateModal.style.display = "none";

@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-# Load environment variables from .env file....
+# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
@@ -89,6 +89,8 @@ def add_user():
         db.session.add(new_user)
         db.session.commit()
 
+        print(f"User added with encrypted user_id: {new_user._user_id}")  # Debugging statement
+
         return jsonify({"message": "User added successfully!"}), 201  # 201 = Created
 
     except IntegrityError:
@@ -98,25 +100,29 @@ def add_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Always return a valid JSON response
 
-# API: Remove User
-@app.route('/remove_user', methods=['POST'])
-def remove_user():
+# API: Archive User
+@app.route('/archive_user', methods=['POST'])
+def archive_user():
     try:
         data = request.get_json()
-        user_id = data['user_id']
+        user_id = data.get('user_id').strip().replace("-", "")  # Ensure formatting
 
-        # Encrypt the user_id to match the stored encrypted_user_id
-        encrypted_user_id = cipher_suite.encrypt(user_id.encode()).decode()
+        # 🔍 DEBUG: Print all stored users
+        all_users = User.query.all()
+        for user in all_users:
+            print(f"Stored User: {user.name}, Decrypted user_id: {user.user_id}")
 
-        # Find the user by encrypted_user_id
-        user = User.query.filter_by(_user_id=encrypted_user_id).first()
+        # 🔍 Attempt to find the user
+        user = next((u for u in all_users if u.user_id == user_id), None)
+        print(f"Searching for user_id: {user_id}")
+        print(f"User found: {user}")
 
         if user:
-            db.session.delete(user)
+            user.is_active = False
             db.session.commit()
-            return jsonify({"message": f"User {user.name} ({user.user_id}) removed successfully!"}), 200
+            return jsonify({"message": f"User {user.name} ({user.user_id}) archived successfully!"}), 200
         else:
-            return jsonify({"error": "User not found. It may have already been deleted."}), 404
+            return jsonify({"error": "User not found. It may have already been archived."}), 404
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -179,45 +185,6 @@ def update_user():
         
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-# Add this new route after your existing routes
-@app.route('/archive_user', methods=['POST'])
-def archive_user():
-    try:
-        data = request.get_json()
-        user = User.query.filter_by(user_id=data['user_id'], email=data['user_email']).first()
-
-        if user:
-            user.is_active = False
-            db.session.commit()
-            return jsonify({"message": f"User {user.name} ({user.user_id}) archived successfully!"}), 200
-        else:
-            return jsonify({"error": "User not found. It may have already been archived."}), 404
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/archived_users', methods=['GET'])
-def archived_users():
-    users = User.query.filter_by(is_active=False).all()
-    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program} for user in users]
-    return jsonify(users_list)
-
-@app.route('/reactivate_user', methods=['POST'])
-def reactivate_user():
-    try:
-        data = request.get_json()
-        user = User.query.filter_by(user_id=data['user_id'], email=data['user_email']).first()
-
-        if user:
-            user.is_active = True
-            db.session.commit()
-            return jsonify({"message": f"User {user.name} ({user.user_id}) reactivated successfully!"}), 200
-        else:
-            return jsonify({"error": "User not found. It may have already been reactivated."}), 404
-
-    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # Run Flask App
