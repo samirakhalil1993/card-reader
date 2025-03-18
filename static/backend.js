@@ -119,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
             if (response.ok) {
                 alert(result.message);  // Show success message
+
                 // Add the new user to the table immediately
                 const row = usersTableBody.insertRow();
                 row.insertCell(0).textContent = formData.name;
@@ -126,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.insertCell(2).textContent = formData.user_id;
                 row.insertCell(3).textContent = formData.program; // Add program to the table
                 row.insertCell(4).textContent = 'Active'; // Default status
-                row.insertCell(5).textContent = 'No Expiration'; // Default expiration time
+                row.insertCell(5).textContent = result.expiration_time ? new Date(result.expiration_time).toLocaleString() : 'No Expiration'; // Use expiration_time from backend
 
                 // Add click event for updating
                 row.addEventListener("click", function(e) {

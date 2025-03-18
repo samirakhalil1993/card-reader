@@ -4,23 +4,23 @@ from cryptography.fernet import Fernet
 import os
 from dotenv import load_dotenv
 
-# 🔹 Load environment variables from .env
+#  Load environment variables from .env
 load_dotenv()
 
-# 🔹 Get encryption key
+# Get encryption key
 key = os.getenv('ENCRYPTION_KEY')
 
-# 🔹 Debugging: Print to verify key is loaded
-print(f"Loaded encryption key: {key}")
+# Debugging: Print to verify key is loaded
+# print(f"Loaded encryption key: {key}")
 
-# 🔹 Ensure the key exists
+#  Ensure the key exists
 if not key:
     raise ValueError("No encryption key found in environment variables")
 
-# 🔹 Create cipher suite
+#  Create cipher suite
 cipher_suite = Fernet(key.encode())
 
-# 🔹 Initialize a SQLAlchemy database instance
+#  Initialize a SQLAlchemy database instance
 db = SQLAlchemy()
 
 # Define the User model (table: users)
@@ -36,7 +36,7 @@ class User(db.Model):
     # Email: Must be unique and not null, max 100 characters
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
 
-    # 🔹 FIX: Use LargeBinary for encrypted data storage
+    #  FIX: Use LargeBinary for encrypted data storage
     _user_id = db.Column("user_id", db.LargeBinary, unique=True, nullable=False, index=True)
 
     # Program: Stores the BTH program the user is enrolled in
@@ -80,4 +80,4 @@ class User(db.Model):
         value = value.strip().replace("-", "")  # Normalize format
         encrypted_user_id = cipher_suite.encrypt(value.encode())  # Encrypt as bytes
         self._user_id = encrypted_user_id  # Store encrypted data as bytes
-        print(f"🔒 Storing Encrypted user_id: {self._user_id}")  # Debugging
+        #print(f" Storing Encrypted user_id: {self._user_id}")  # Debugging

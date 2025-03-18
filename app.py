@@ -94,9 +94,10 @@ def add_user():
         db.session.add(new_user)
         db.session.commit()
 
-        print(f"User added with encrypted user_id: {new_user._user_id}")  # Debugging statement
-
-        return jsonify({"message": "User added successfully!"}), 201  # 201 = Created
+        return jsonify({
+            "message": "User added successfully!",
+            "expiration_time": expiration_time.isoformat()  # Include expiration_time in the response
+        }), 201  # 201 = Created
 
     except IntegrityError:
         db.session.rollback()  # Rollback if there is a duplicate entry
@@ -119,8 +120,8 @@ def archive_user():
 
         # 🔍 Attempt to find the user
         user = next((u for u in all_users if u.user_id == user_id), None)
-        print(f"Searching for user_id: {user_id}")
-        print(f"User found: {user}")
+        #print(f"Searching for user_id: {user_id}")
+        #print(f"User found: {user}")
 
         if user:
             user.is_active = False
@@ -139,15 +140,15 @@ def reactivate_user():
         data = request.get_json()
         user_id = data.get('user_id').strip().replace("-", "")  # Ensure formatting
 
-        # 🔍 DEBUG: Print all stored users
+        # DEBUG: Print all stored users
         all_users = User.query.all()
-        for user in all_users:
-            print(f"Stored User: {user.name}, Decrypted user_id: {user.user_id}")
+        #for user in all_users:
+        #    print(f"Stored User: {user.name}, Decrypted user_id: {user.user_id}")
 
-        # 🔍 Attempt to find the user
+        # Attempt to find the user
         user = next((u for u in all_users if u.user_id == user_id), None)
-        print(f"Searching for user_id: {user_id}")
-        print(f"User found: {user}")
+        #print(f"Searching for user_id: {user_id}")
+        #print(f"User found: {user}")
 
         if user:
             user.is_active = True
@@ -182,26 +183,27 @@ def update_user():
         # Get user data from request
         data = request.get_json()
         user_id = data.get('user_id')
-        
-        # Find the user
-        user = User.query.filter_by(user_id=user_id).first()
+
+        # Decrypt all users and find the matching user
+        all_users = User.query.all()
+        user = next((u for u in all_users if u.user_id == user_id), None)  # Match plain user_id
         print(f"User found: {user}")  # Debugging statement
-        
+
         if not user:
             return jsonify({"error": "User not found"}), 404
-            
+
         # Validate BTH email if email is being changed
         if data.get('email') != user.email and not validate_bth_email(data['email']):
             return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
-            
+
         # Update user information
         user.name = data.get('name', user.name)
         user.email = data.get('email', user.email)
         user.program = data.get('program', user.program)
-        
+
         # Commit changes to database
         db.session.commit()
-        
+
         return jsonify({
             "message": "User updated successfully",
             "user": {
@@ -211,11 +213,11 @@ def update_user():
                 "program": user.program
             }
         }), 200
-        
+
     except IntegrityError:
         db.session.rollback()
         return jsonify({"error": "Email already exists for another user"}), 400
-        
+
     except Exception as e:
         db.session.rollback()
         print(f"Error updating user: {e}")  # Debugging statement
