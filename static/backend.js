@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.insertCell(2).textContent = user.user_id;
                         row.insertCell(3).textContent = user.program;
                         row.insertCell(4).textContent = user.is_active ? 'Active' : 'Archived'; // Add status column
+                        row.insertCell(5).textContent = user.expiration_time ? new Date(user.expiration_time).toLocaleString() : 'No Expiration'; // Add expiration time column
 
                         // Add click event for updating
                         row.addEventListener("click", function(e) {
@@ -76,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                     });
                 } else if (searchTerm) {
-                    usersTableBody.innerHTML = '<tr><td colspan="5">No users found</td></tr>'; // Update colspan to 5
+                    usersTableBody.innerHTML = '<tr><td colspan="6">No users found</td></tr>'; // Update colspan to 6
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -125,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.insertCell(2).textContent = formData.user_id;
                 row.insertCell(3).textContent = formData.program; // Add program to the table
                 row.insertCell(4).textContent = 'Active'; // Default status
+                row.insertCell(5).textContent = 'No Expiration'; // Default expiration time
 
                 // Add click event for updating
                 row.addEventListener("click", function(e) {

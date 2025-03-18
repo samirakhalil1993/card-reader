@@ -50,12 +50,7 @@ body {
 .admin-header {
   text-align: center;
   margin-bottom: 20px;
-  background: linear-gradient(
-    90deg,
-    #007bff,
-    #012c5a
-  ); 
-  /* Blue gradient background */
+  background: linear-gradient(90deg, #007bff, #012c5a); /* Blue gradient background */
   padding: 10px 0; /* Adjusts the vertical padding to reduce header height */
   border-radius: 8px; /* Rounds the corners for a smooth look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
@@ -125,10 +120,8 @@ body {
 
 /* Filter Buttons Styling *********************************************************************************************/
 .filter-buttons {
-  text-align:left;
-  /*margin-bottom: 20px;*/
-  margin: 20px 149px; /* Centers the box horizontally */
-
+  text-align: left;
+  margin: 20px 16%; /* Centers the box horizontally */
 }
 
 .filter-button {
@@ -160,7 +153,7 @@ body {
   border-radius: 5px;
   padding: 20px;
   width: 90%; /* Ensures the box takes up 90% of the available width */
-  max-width: 1000px; /* Limits the maximum width to prevent excessive stretching */
+  max-width: 1250px; /* Limits the maximum width to prevent excessive stretching */
   text-align: center; /* Centers the content inside */
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
   overflow-x: auto; /* Enables horizontal scrolling if needed */
@@ -172,6 +165,8 @@ body {
   width: 100%; /* Ensures the table stretches to fill the box */
   border-collapse: collapse; /* Removes spacing between borders */
   table-layout: fixed; /* Ensures equal column width */
+  border-radius: 5px; /* Adds rounded corners to the table */
+  overflow: hidden; /* Ensures rounded corners are visible */
 }
 
 table {
@@ -183,7 +178,7 @@ table {
 .review-users-box th {
   background-color: #007bff; /* Blue background for headers */
   color: white; /* White text color */
-  padding: 8px; /* Adds padding for better readability */
+  padding: 12px; /* Adds padding for better readability */
   text-align: center; /* Centers the text in the headers */
   border: 1px solid #ddd; /* Adds a light border around each header */
   white-space: nowrap; /* Prevents the headers from wrapping to multiple lines */
@@ -198,13 +193,12 @@ th {
 .review-users-box td {
   padding: 8px; /* Adds padding for spacing */
   border: 1px solid #ddd; /* Adds a light border around each cell */
-  text-align: center; /* Centers the text */
   word-wrap: break-word; /* Ensures long text wraps inside the cell */
 }
 
 th,
 td {
-  padding: 10px;
+  padding: 13px;
   text-align: left;
   border-bottom: 1px solid #dee2e6;
 }
@@ -213,7 +207,7 @@ td {
 .review-users-box th:nth-child(4),
 .review-users-box td:nth-child(4) {
   text-align: center; /* Center the text */
-  padding: 8px; /* Add padding for spacing */
+  padding: 12px; /* Add padding for spacing */
   border: 1px solid #ddd; /* Add a light border around each cell */
   word-wrap: break-word; /* Ensure long text wraps inside the cell */
 }
@@ -222,9 +216,18 @@ td {
 .review-users-box th:nth-child(5),
 .review-users-box td:nth-child(5) {
   text-align: center; /* Center the text */
-  padding: 8px; /* Add padding for spacing */
+  padding: 12px; /* Add padding for spacing */
   border: 1px solid #ddd; /* Add a light border around each cell */
   word-wrap: break-word; /* Ensure long text wraps inside the cell */
+}
+
+/* Styling for the Expiration Time column */
+.review-users-box th:nth-child(6),
+.review-users-box td:nth-child(6) {
+    text-align: center; /* Center the text */
+    padding: 12px; /* Add padding for spacing */
+    border: 1px solid #ddd; /* Add a light border around each cell */
+    word-wrap: break-word; /* Ensure long text wraps inside the cell */
 }
 
 /* Alternating row colors for better readability */
@@ -263,7 +266,7 @@ td {
   justify-content: space-between; /* Aligns elements in a row */
   align-items: center; /* Aligns items vertically */
   width: 100%; /* Ensures full width */
-  max-width: 1000px; /* Prevents excessive stretching */
+  max-width: 1250px; /* Prevents excessive stretching */
   margin: 0 auto 20px; /* Centers the section */
 }
 
@@ -395,44 +398,48 @@ td {
 .add-user-form button,
 .remove-user-form button,
 .update-user-form button {
-  padding: 12px;
-  background-color: #007bff;
+  padding: 15px; /* Increased padding for larger button size */
+  background-color: #007bff; /* Blue background for Add User button */
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px; /* More rounded corners */
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
+  font-size: 18px; /* Larger font size */
+  font-weight: 600; /* Bolder font weight */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .add-user-form button:hover,
 .remove-user-form button:hover,
 .update-user-form button:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: translateY(-2px); /* Slightly lift the button on hover */
 }
 
 /* Delete Button */
 .add-user-form .delete-button,
 .remove-user-form .delete-button,
 .update-user-form .delete-button {
-  background-color: #dc3545; /* Red background color */
+  background-color: #dc3545; /* Red background color for Archive User button */
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px; /* More rounded corners */
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px; /* Larger font size */
+  font-weight: 600; /* Bolder font weight */
   margin-top: 10px;
-  padding: 12px;
+  padding: 15px; /* Increased padding for larger button size */
   width: 100%;
-  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .add-user-form .delete-button:hover,
 .remove-user-form .delete-button:hover,
 .update-user-form .delete-button:hover {
   background-color: #c82333; /* Darker red on hover */
+  transform: translateY(-2px); /* Slightly lift the button on hover */
 }
 
 /* Delete Text */
@@ -522,10 +529,7 @@ button.delete-button:hover {
 .admin-footer {
   text-align: center;
   padding: 15px;
-  background: linear-gradient(
-    90deg,
-    #007bff,
-    #012c5a);
+  background: linear-gradient(90deg, #007bff, #012c5a);
   color: white;
   position: fixed;
   bottom: 0;

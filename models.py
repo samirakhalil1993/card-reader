@@ -45,6 +45,9 @@ class User(db.Model):
     # New column to indicate active status
     is_active = db.Column(db.Boolean, default=True)
 
+    # Add the expiration_time column to the User model
+    expiration_time = db.Column(db.DateTime, nullable=True)  # Nullable to allow no expiration
+
     # Convert the User object into a dictionary for easy JSON serialization
     def to_dict(self):
         """Convert model object to dictionary for JSON responses."""
@@ -54,7 +57,8 @@ class User(db.Model):
             "email": self.email,
             "user_id": self.user_id,  # Decrypted before returning
             "program": self.program,
-            "is_active": self.is_active
+            "is_active": self.is_active,
+            "expiration_time": self.expiration_time.isoformat() if self.expiration_time else None
         }
 
     @hybrid_property
@@ -63,10 +67,10 @@ class User(db.Model):
         if self._user_id:  # Ensure _user_id is not None
             try:
                 decrypted_user_id = cipher_suite.decrypt(self._user_id).decode()
-                print(f"✅ Decrypted user_id: {decrypted_user_id}")  # Debugging statement
+                print(f"Decrypted user_id: {decrypted_user_id}")  # Debugging statement
                 return decrypted_user_id
             except Exception as e:
-                print(f"❌ Error decrypting user_id: {e}")  # Debugging statement
+                print(f"Error decrypting user_id: {e}")  # Debugging statement
                 return None
         return None  # Return None if _user_id is empty
 

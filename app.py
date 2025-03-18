@@ -77,11 +77,16 @@ def add_user():
         # Set default program if not provided
         program = data.get('program', 'Unknown')
 
+        # Set expiration time to one year from now
+        from datetime import datetime, timedelta
+        expiration_time = datetime.utcnow() + timedelta(days=365)
+
         # Create a new user
         new_user = User(
             name=data['name'],
             email=data['email'],
-            program=program   # Store the BTH program
+            program=program,  # Store the BTH program
+            expiration_time=expiration_time  # Set expiration time
         )
         new_user.user_id = data['user_id']  # Set the user_id using the hybrid property
 
@@ -164,11 +169,11 @@ def review_users():
     if name:
         query = query.filter(User.name.ilike(f"%{name}%"))
     if is_active is not None:
-        query = query.filter_by(is_active=bool(is_active))
+        query = query.filter(User.is_active == bool(is_active))
 
     users = query.all()
-    users_list = [{"name": user.name, "email": user.email, "user_id": user.user_id, "program": user.program, "is_active": user.is_active} for user in users]
-    return jsonify(users_list)
+    users_data = [user.to_dict() for user in users]  # Convert users to dictionary format
+    return jsonify(users_data)
 
 # Add this new route after your existing routes
 @app.route('/update_user', methods=['POST'])
