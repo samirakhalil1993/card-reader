@@ -79,7 +79,8 @@ def add_user():
 
         # Set expiration time to one year from now
         from datetime import datetime, timedelta
-        expiration_time = datetime.utcnow() + timedelta(days=365)
+        expiration_time = (datetime.utcnow() + timedelta(days=365)).date()
+        print(f"Expiration time: {expiration_time}")  # Debugging statement
 
         # Create a new user
         new_user = User(
