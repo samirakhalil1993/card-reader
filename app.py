@@ -14,7 +14,7 @@ import atexit
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS to allow cross-origin requests
+CORS(app)
 
 # Configure Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin@admin-panel-server:Card.1111@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
@@ -28,234 +28,166 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
-# Function to validate Swedish Personnummer
 def validate_personnummer(personnummer):
-    """Ensure Personnummer is in YYYYMMDDXXXX or YYYYMMDD-XXXX format."""
     return re.match(r'^\d{8}[-]?\d{4}$', personnummer) is not None
 
-# Function to validate BTH email
 def validate_bth_email(email):
-    """Ensure email is a BTH email address."""
     return email.endswith('@student.bth.se')
 
-# Function to archive expired users
 def archive_expired_users():
-    """Archive users whose expiration time has passed."""
     try:
         with app.app_context():
-            print("Running archive_expired_users function...")  # Confirm function execution
-            # Query for users whose expiration time has passed and are still active
             expired_users = User.query.filter(
-                User.expiration_time < datetime.now(timezone.utc),  # Compare full datetime
-                User.is_active == True  # Only archive active users
+                User.expiration_time < datetime.now(timezone.utc),
+                User.is_active == True
             ).all()
-
-            # Archive each expired user
             for user in expired_users:
                 user.is_active = False
-                print(f"Archived user: {user.name} (ID: {user.user_id})")  # Debugging statement
-
-            # Commit changes to the database
             db.session.commit()
-            print(f"Archived {len(expired_users)} expired users.")  # Debugging statement
     except Exception as e:
-        print(f"Error archiving expired users: {e}")  # Debugging statement
+        print(f"Error archiving expired users: {e}")
 
-# Start the APScheduler
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=archive_expired_users, trigger="interval", hours=24)  # Run every 24 hours
+scheduler.add_job(func=archive_expired_users, trigger="interval", hours=24)
 scheduler.start()
-
-# Ensure the scheduler shuts down when the app exits
 atexit.register(lambda: scheduler.shutdown())
 
-# Render Home Page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Admin Login Route
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username == 'admin' and password == 'password':  # Replace with actual authentication logic
+        if username == 'admin' and password == 'password':
             return redirect(url_for('admin_interface'))
         else:
             error = "Invalid credentials. Please try again."
     return render_template('index.html', error=error)
 
-# Admin Interface - Shows All Users
 @app.route('/admin_interface')
 def admin_interface():
-    users = User.query.all()  # Fetch all users from the database
+    users = User.query.all()
     return render_template('admin.html', users=users)
 
-# API: Add User
 @app.route('/add_user', methods=['POST'])
 def add_user():
     try:
-        # Get user data from the request
         data = request.get_json()
-
-        # Validate Personnummer format
         if not validate_personnummer(data['user_id']):
-            return jsonify({"error": "Invalid Personnummer format. Use YYYYMMDDXXXX or YYYYMMDD-XXXX."}), 400
-
-        # Validate BTH email
+            return jsonify({"error": "Invalid Personnummer format."}), 400
         if not validate_bth_email(data['email']):
-            return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
-
-        # Set default program if not provided
-        program = data.get('program', 'Unknown')
-
-        # Set expiration time to one year from now for testing purposes
-        expiration_time = (datetime.now(timezone.utc) + timedelta(days=365))
-        print(f"Expiration time: {expiration_time}")  # Debugging statement
-
-        # Create a new user
+            return jsonify({"error": "Invalid email address."}), 400
+        expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
         new_user = User(
             name=data['name'],
             email=data['email'],
-            program=program,  # Store the BTH program
-            expiration_time=expiration_time  # Set expiration time
+            program=data.get('program', 'Unknown'),
+            expiration_time=expiration_time
         )
-        new_user.user_id = data['user_id']  # Set the user_id using the hybrid property
-
-        # Add and commit to the database
+        new_user.user_id = data['user_id']
         db.session.add(new_user)
         db.session.commit()
-
-        return jsonify({
-            "message": "User added successfully!",
-            "expiration_time": expiration_time.isoformat()  # Include expiration_time in the response
-        }), 201  # 201 = Created
-
+        return jsonify({"message": "User added successfully!", "expiration_time": expiration_time.isoformat()}), 201
     except IntegrityError:
-        db.session.rollback()  # Rollback if there is a duplicate entry
+        db.session.rollback()
         return jsonify({"error": "User with this email or UserID already exists!"}), 400
-
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  # Always return a valid JSON response
+        return jsonify({"error": str(e)}), 500
 
-# API: Archive User
 @app.route('/archive_user', methods=['POST'])
 def archive_user():
     try:
         data = request.get_json()
-        user_id = data.get('user_id').strip().replace("-", "")  # Ensure formatting
-
-        # 🔍 DEBUG: Print all stored users
+        user_id = data.get('user_id').strip().replace("-", "")
         all_users = User.query.all()
-        for user in all_users:
-            print(f"Stored User: {user.name}, Decrypted user_id: {user.user_id}")
-
-        # 🔍 Attempt to find the user
         user = next((u for u in all_users if u.user_id == user_id), None)
-        #print(f"Searching for user_id: {user_id}")
-        #print(f"User found: {user}")
-
         if user:
             user.is_active = False
             db.session.commit()
-            return jsonify({"message": f"User {user.name} ({user.user_id}) archived successfully!"}), 200
+            return jsonify({"message": f"User {user.name} archived successfully!"}), 200
         else:
-            return jsonify({"error": "User not found. It may have already been archived."}), 404
-
+            return jsonify({"error": "User not found."}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API: Reactivate User
 @app.route('/reactivate_user', methods=['POST'])
 def reactivate_user():
     try:
         data = request.get_json()
-        user_id = data.get('user_id').strip().replace("-", "")  # Ensure formatting
-
-        # Attempt to find the user
+        user_id = data.get('user_id').strip().replace("-", "")
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
-
         if user:
-            if not user.is_active:  # Only update expiration time if the user is archived
-                user.expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()  # Set new expiration time
+            if not user.is_active:
+                user.expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
             user.is_active = True
             db.session.commit()
             return jsonify({
-                "message": f"User {user.name} ({user.user_id}) reactivated successfully!",
-                "new_expiration_time": user.expiration_time.strftime('%Y-%m-%d')  # Include new expiration time
+                "message": f"User {user.name} reactivated successfully! Expiration Time: {user.expiration_time.isoformat()}",
             }), 200
         else:
-            return jsonify({"error": "User not found. It may have already been reactivated."}), 404
-
+            return jsonify({"error": "User not found."}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API: Search User by Name
 @app.route('/review_users', methods=['GET'])
 def review_users():
     name = request.args.get('name')
-    is_active = request.args.get('is_active', type=int)  # Get the 'is_active' query parameter
-
+    user_id = request.args.get('user_id')
+    is_active = request.args.get('is_active', type=int)
     query = User.query
     if name:
         query = query.filter(User.name.ilike(f"%{name}%"))
+    if user_id:
+        all_users = User.query.all()
+        query = [u for u in all_users if u.user_id == user_id]
     if is_active is not None:
         query = query.filter(User.is_active == bool(is_active))
+    users = query if isinstance(query, list) else query.all()
+    return jsonify([user.to_dict() for user in users])
 
-    users = query.all()
-    users_data = [user.to_dict() for user in users]  # Convert users to dictionary format
-    return jsonify(users_data)
+@app.route('/update_user_schedule/<user_id>', methods=['POST'])
+def update_user_schedule(user_id):
+    try:
+        data = request.get_json()
+        schedules = data.get('schedules', {})
+        all_users = User.query.all()
+        user = next((u for u in all_users if u.user_id == user_id), None)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        user.schedules = schedules
+        db.session.commit()
+        return jsonify({"message": "Schedule updated successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-# Add this new route after your existing routes
 @app.route('/update_user', methods=['POST'])
 def update_user():
     try:
-        # Get user data from request
         data = request.get_json()
         user_id = data.get('user_id')
-
-        # Decrypt all users and find the matching user
         all_users = User.query.all()
-        user = next((u for u in all_users if u.user_id == user_id), None)  # Match plain user_id
-        print(f"User found: {user}")  # Debugging statement
-
+        user = next((u for u in all_users if u.user_id == user_id), None)
         if not user:
             return jsonify({"error": "User not found"}), 404
-
-        # Validate BTH email if email is being changed
         if data.get('email') != user.email and not validate_bth_email(data['email']):
-            return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
-
-        # Update user information
+            return jsonify({"error": "Invalid email address."}), 400
         user.name = data.get('name', user.name)
         user.email = data.get('email', user.email)
         user.program = data.get('program', user.program)
-
-        # Commit changes to database
+        user.schedules = data.get('schedules', user.schedules)
         db.session.commit()
-
-        return jsonify({
-            "message": "User updated successfully",
-            "user": {
-                "name": user.name,
-                "email": user.email,
-                "user_id": user.user_id,
-                "program": user.program
-            }
-        }), 200
-
+        return jsonify({"message": "User updated successfully", "user": user.to_dict()}), 200
     except IntegrityError:
         db.session.rollback()
         return jsonify({"error": "Email already exists for another user"}), 400
-
     except Exception as e:
         db.session.rollback()
-        print(f"Error updating user: {e}")  # Debugging statement
         return jsonify({"error": str(e)}), 500
 
-# Run Flask App
 if __name__ == '__main__':
     app.run(debug=True)
