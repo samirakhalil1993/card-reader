@@ -6,6 +6,9 @@ from models import db, User, cipher_suite
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 # Load environment variables from .env file
 load_dotenv()
@@ -34,6 +37,37 @@ def validate_personnummer(personnummer):
 def validate_bth_email(email):
     """Ensure email is a BTH email address."""
     return email.endswith('@student.bth.se')
+
+# Function to archive expired users
+def archive_expired_users():
+    """Archive users whose expiration time has passed."""
+    try:
+        with app.app_context():
+            print("Running archive_expired_users function...")  # Confirm function execution
+            # Query for users whose expiration time has passed and are still active
+            expired_users = User.query.filter(
+                User.expiration_time < datetime.now(timezone.utc),  # Compare full datetime
+                User.is_active == True  # Only archive active users
+            ).all()
+
+            # Archive each expired user
+            for user in expired_users:
+                user.is_active = False
+                print(f"Archived user: {user.name} (ID: {user.user_id})")  # Debugging statement
+
+            # Commit changes to the database
+            db.session.commit()
+            print(f"Archived {len(expired_users)} expired users.")  # Debugging statement
+    except Exception as e:
+        print(f"Error archiving expired users: {e}")  # Debugging statement
+
+# Start the APScheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=archive_expired_users, trigger="interval", hours=24)  # Run every 24 hours
+scheduler.start()
+
+# Ensure the scheduler shuts down when the app exits
+atexit.register(lambda: scheduler.shutdown())
 
 # Render Home Page
 @app.route('/')
@@ -77,9 +111,8 @@ def add_user():
         # Set default program if not provided
         program = data.get('program', 'Unknown')
 
-        # Set expiration time to one year from now
-        from datetime import datetime, timedelta
-        expiration_time = (datetime.utcnow() + timedelta(days=365)).date()
+        # Set expiration time to one year from now for testing purposes
+        expiration_time = (datetime.now(timezone.utc) + timedelta(days=365))
         print(f"Expiration time: {expiration_time}")  # Debugging statement
 
         # Create a new user
@@ -147,8 +180,7 @@ def reactivate_user():
 
         if user:
             if not user.is_active:  # Only update expiration time if the user is archived
-                from datetime import datetime, timedelta
-                user.expiration_time = (datetime.utcnow() + timedelta(days=365)).date()  # Set new expiration time
+                user.expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()  # Set new expiration time
             user.is_active = True
             db.session.commit()
             return jsonify({

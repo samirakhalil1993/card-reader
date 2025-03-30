@@ -45,8 +45,9 @@ class User(db.Model):
     # New column to indicate active status
     is_active = db.Column(db.Boolean, default=True)
 
-    # Add the expiration_time column to the User model
-    expiration_time = db.Column(db.Date, nullable=True)  # Use db.Date for date-only storage
+    # Ensure expiration_time is defined as DateTime
+    expiration_time = db.Column(db.DateTime, nullable=True)  # Use db.DateTime for date and time storage
+
     # Convert the User object into a dictionary for easy JSON serialization
     def to_dict(self):
         """Convert model object to dictionary for JSON responses."""
@@ -57,8 +58,8 @@ class User(db.Model):
             "user_id": self.user_id,  # Decrypted before returning
             "program": self.program,
             "is_active": self.is_active,
-            "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None
-            }
+            "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None  # Format as date-only
+        }
 
     @hybrid_property
     def user_id(self):
