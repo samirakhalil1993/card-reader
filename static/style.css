@@ -196,6 +196,15 @@ th {
   word-wrap: break-word; /* Ensures long text wraps inside the cell */
 }
 
+/* Add specific styling for the Expiration Time column */
+.review-users-box th.expiration-time-header,
+.review-users-box td.expiration-time-data {
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+}
+
 th,
 td {
   padding: 13px;
@@ -439,6 +448,27 @@ td {
 .remove-user-form .delete-button:hover,
 .update-user-form .delete-button:hover {
   background-color: #c82333; /* Darker red on hover */
+  transform: translateY(-2px); /* Slightly lift the button on hover */
+}
+
+/* Activate Button */
+.update-user-form .activate-button {
+  background-color: #28a745; /* Green background color for Activate User button */
+  color: white;
+  border: none;
+  border-radius: 8px; /* More rounded corners */
+  cursor: pointer;
+  font-size: 18px; /* Larger font size */
+  font-weight: 600; /* Bolder font weight */
+  margin-top: 10px;
+  padding: 15px; /* Increased padding for larger button size */
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.update-user-form .activate-button:hover {
+  background-color: #218838; /* Darker green on hover */
   transform: translateY(-2px); /* Slightly lift the button on hover */
 }
 

@@ -58,7 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.insertCell(2).textContent = user.user_id;
                         row.insertCell(3).textContent = user.program;
                         row.insertCell(4).textContent = user.is_active ? 'Active' : 'Archived'; // Add status column
-                        row.insertCell(5).textContent = user.expiration_time ? new Date(user.expiration_time).toISOString().split('T')[0] : 'No Expiration';
+                        const expirationTimeCell = row.insertCell(5);
+                        expirationTimeCell.textContent = user.is_active ? user.expiration_time : ''; // Conditionally render expiration time
+
                         // Add click event for updating
                         row.addEventListener("click", function(e) {
                             e.preventDefault();
@@ -72,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             // Display the modal
                             updateModal.style.display = "block";
-                            archiveUserButton.textContent = user.is_active ? "Archive User" : "Activate User"; // Change button text based on status
+                            updateArchiveButton(user); // Update button text and style dynamically
                         });
                     });
                 } else if (searchTerm) {
@@ -251,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Handle archive user button click in the update modal
+    // Handle archive/reactivate user button click in the update modal
     document.getElementById("archiveUserButton").addEventListener("click", async function() {
         const userId = document.getElementById("updateUserId").value;
 
@@ -279,6 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 alert(`User ${action}d successfully!`);
+                if (action === "reactivate" && result.new_expiration_time) {
+                    alert(`New expiration time: ${result.new_expiration_time}`); // Notify about the new expiration time
+                }
                 updateModal.style.display = "none";
                 fetchUsers(); // Refresh the table
             } else {
@@ -289,6 +294,20 @@ document.addEventListener("DOMContentLoaded", function () {
             alert(`An error occurred while trying to ${action} the user`);
         }
     });
+
+    // Update button text and style dynamically
+    function updateArchiveButton(user) {
+        const archiveUserButton = document.getElementById("archiveUserButton");
+        if (user.is_active) {
+            archiveUserButton.textContent = "Archive User";
+            archiveUserButton.classList.remove("activate-button");
+            archiveUserButton.classList.add("delete-button");
+        } else {
+            archiveUserButton.textContent = "Activate User";
+            archiveUserButton.classList.remove("delete-button");
+            archiveUserButton.classList.add("activate-button");
+        }
+    }
 
     // Add event listeners for filter buttons
     showActiveUsersButton.addEventListener("click", function () {
