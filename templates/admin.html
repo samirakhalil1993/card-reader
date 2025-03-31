@@ -104,16 +104,16 @@
       <input type="text" name="name" placeholder="User Name" required />
       <input type="email" name="email" placeholder="User Email (must be @student.bth.se)" required />
       <input type="text" name="user_id" placeholder="User ID" required />
-      <select name="program" required>
-          <option value="" disabled selected>Select Program</option>
-          <option value="Software Engineering">Software Engineering</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Mechanical Engineering">Mechanical Engineering</option>
-          <option value="Data Security">Data Security</option>
-          <option value="Game technology">Game technology</option>
-          <option value="AI and Machine Learning">AI and Machine Learning</option>
+      <input list="programs" name="program" placeholder="Select or Write Program" required />
+      <datalist id="programs">
+          <option value="Software Engineering"></option>
+          <option value="Computer Science"></option>
+          <option value="Mechanical Engineering"></option>
+          <option value="Data Security"></option>
+          <option value="Game technology"></option>
+          <option value="AI and Machine Learning"></option>
           <!-- Add more programs as needed -->
-      </select>
+      </datalist>
       <button type="submit">Add User</button>
     </form>
   </div>
@@ -140,15 +140,16 @@
       <input type="text" name="name" id="updateName" placeholder="User Name" required />
       <input type="email" name="email" id="updateEmail" placeholder="User Email" required />
       <input type="text" name="user_id" id="updateUserId" placeholder="User ID" required readonly />
-      <select name="program" id="updateProgram" required>
-          <option value="" disabled>Select Program</option>
-          <option value="Software Engineering">Software Engineering</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Mechanical Engineering">Mechanical Engineering</option>
-          <option value="Data Security">Data Security</option>
-          <option value="Game technology">Game technology</option>
-          <option value="AI and Machine Learning">AI and Machine Learning</option>
-      </select>
+      <input list="updatePrograms" name="program" id="updateProgram" placeholder="Select or Write Program" required />
+      <datalist id="updatePrograms">
+          <option value="Software Engineering"></option>
+          <option value="Computer Science"></option>
+          <option value="Mechanical Engineering"></option>
+          <option value="Data Security"></option>
+          <option value="Game technology"></option>
+          <option value="AI and Machine Learning"></option>
+          <!-- Add more programs as needed -->
+      </datalist>
 
       <!-- Scheduling Section -->
       <h3>Manage Schedule</h3>

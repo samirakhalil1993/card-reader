@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: addUserForm.elements["name"].value,
             email: addUserForm.elements["email"].value,
             user_id: addUserForm.elements["user_id"].value,
-            program: addUserForm.elements["program"].value // Include program in form data
+            program: addUserForm.elements["program"].value // Allow custom program input
         };
 
         // Client-side validation for BTH email
@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: document.getElementById("updateName").value,
             email: document.getElementById("updateEmail").value,
             user_id: document.getElementById("updateUserId").value,
-            program: document.getElementById("updateProgram").value,
+            program: document.getElementById("updateProgram").value, // Allow custom program input
             schedules: {} // Collect updated schedules
         };
 
