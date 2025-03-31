@@ -6,10 +6,10 @@ from models import db, User, cipher_suite
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone  # Ensure timezone is imported correctly
+from pytz import timezone as pytz_timezone  # Alias pytz timezone to avoid conflicts
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from pytz import timezone  # Import timezone from pytz
 
 # Load environment variables from .env file
 load_dotenv()
@@ -108,7 +108,7 @@ def archive_user():
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
             user.is_active = False
-            cet = timezone('Europe/Stockholm')  # Replace with the desired European timezone
+            cet = pytz_timezone('Europe/Stockholm')  # Use pytz timezone with alias
             user.archived_date = datetime.now(cet)  # Set the archived date in CET
             db.session.commit()
             return jsonify({
@@ -129,7 +129,7 @@ def reactivate_user():
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
             if not user.is_active:
-                user.expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
+                user.expiration_time = datetime.now(timezone.utc) + timedelta(days=365)  # Use datetime.timezone.utc
             user.is_active = True
             db.session.commit()
             return jsonify({
