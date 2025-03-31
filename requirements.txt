@@ -1,0 +1,9 @@
+flask
+flask_cors
+flask_sqlalchemy
+cryptography
+python-dotenv
+flask_migrate
+pytz
+apscheduler
+pyodbc
