@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
+from pytz import timezone  # Import timezone from pytz
 
 # Load environment variables from .env file
 load_dotenv()
@@ -107,8 +108,13 @@ def archive_user():
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
             user.is_active = False
+            cet = timezone('Europe/Stockholm')  # Replace with the desired European timezone
+            user.archived_date = datetime.now(cet)  # Set the archived date in CET
             db.session.commit()
-            return jsonify({"message": f"User {user.name} archived successfully!"}), 200
+            return jsonify({
+                "message": f"User {user.name} archived successfully!",
+                "archived_date": user.archived_date.isoformat()
+            }), 200
         else:
             return jsonify({"error": "User not found."}), 404
     except Exception as e:

@@ -64,11 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.insertCell(1).textContent = user.email;
                         row.insertCell(2).textContent = user.user_id;
                         row.insertCell(3).textContent = user.program;
-                        row.insertCell(4).textContent = user.is_active ? 'Active' : 'Archived';
-                        const expirationTimeCell = row.insertCell(5);
-                        expirationTimeCell.textContent = user.is_active ? user.expiration_time : '';
-
-                        // Add schedules column
+                        row.insertCell(4).textContent = user.is_active
+                            ? 'Active'
+                            : `Archived: ${user.archived_date ? new Date(user.archived_date).toISOString().split('T')[0] : ''}`;
+                        row.insertCell(5).textContent = user.is_active ? user.expiration_time : '';
                         const schedulesCell = row.insertCell(6);
                         schedulesCell.innerHTML = ""; // Clear existing content
                         if (user.schedules && Object.keys(user.schedules).length > 0) {

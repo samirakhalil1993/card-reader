@@ -69,7 +69,13 @@
                   <td>{{ user.email }}</td>
                   <td>{{ user.user_id }}</td>
                   <td>{{ user.program }}</td>
-                  <td>{{ 'Active' if user.is_active else 'Archived' }}</td> <!-- Add Status column data -->
+                  <td>
+                      {% if user.is_active %}
+                          Active
+                      {% else %}
+                          Archived: {{ user.archived_date.strftime('%Y-%m-%d') if user.archived_date else '' }}
+                      {% endif %}
+                  </td>
                   <td class="expiration-time-data">{{ user.expiration_time if user.is_active else '' }}</td> <!-- Conditionally render expiration time -->
                   <td>
                       {% if user.schedules %}

@@ -48,6 +48,8 @@ class User(db.Model):
     # Add a JSON column to store schedules
     schedules = db.Column(db.JSON, nullable=True, default=dict)  # Default to an empty dictionary
 
+    # New column to store the date when the user was archived
+    archived_date = db.Column(db.DateTime, nullable=True)
     # Convert the User object into a dictionary for easy JSON serialization
     def to_dict(self):
         """Convert model object to dictionary for JSON responses."""
@@ -59,7 +61,8 @@ class User(db.Model):
             "program": self.program,
             "is_active": self.is_active,
             "expiration_time": self.expiration_time.isoformat() if self.expiration_time else None,  # Ensure ISO format
-            "schedules": self.schedules or {}  # Ensure schedules is always a dictionary
+            "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
+            "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
         }
 
     @hybrid_property
