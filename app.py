@@ -30,7 +30,8 @@ with app.app_context():
     db.create_all()
 
 def validate_personnummer(personnummer):
-    return re.match(r'^\d{8}[-]?\d{4}$', personnummer) is not None
+    # Validate that the personnummer is exactly 10 digits
+    return re.match(r'^\d{10}$', personnummer) is not None
 
 def validate_bth_email(email):
     return email.endswith('@student.bth.se')
@@ -79,9 +80,9 @@ def add_user():
     try:
         data = request.get_json()
 
-        # Validate Personnummer format
+        # Validate Personnummer format (10 digits)
         if not validate_personnummer(data['user_id']):
-            return jsonify({"error": "Invalid Personnummer format. Use YYYYMMDDXXXX or YYYYMMDD-XXXX."}), 400
+            return jsonify({"error": "Invalid Personnummer format. It must be exactly 10 digits."}), 400
 
         # Validate BTH email
         if not validate_bth_email(data['email']):
@@ -96,7 +97,7 @@ def add_user():
             email=data['email'],
             program=data.get('program', 'Unknown'),
             expiration_time=expiration_time,
-            user_id=data['user_id']
+            user_id=data['user_id']  # Use the 10-digit user_id as-is
         )
 
         db.session.add(new_user)
@@ -120,8 +121,8 @@ def add_user():
 def archive_user():
     try:
         data = request.get_json()
-        #user_id = data.get('user_id').strip().replace("-", "")
-        user_id = data.get('user_id')  # No need to normalize or decrypt
+        user_id = data.get('user_id')  # Use the 10-digit user_id as-is
+
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
