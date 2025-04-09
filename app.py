@@ -11,7 +11,7 @@ from pytz import timezone as pytz_timezone  # Alias pytz timezone to avoid confl
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
-# Load environment variables from .env file
+# Load environment variables from .env file.
 #load_dotenv()
 
 app = Flask(__name__)
