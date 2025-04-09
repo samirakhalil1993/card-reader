@@ -91,7 +91,7 @@ def add_user():
         # Set expiration date to 1 year from now
         expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
 
-        # Create and add new user
+        # Create and add new user with status2
         new_user = User(
             name=data['name'],
             email=data['email'],
@@ -174,20 +174,31 @@ def review_users():
     if is_active is not None:
         query = query.filter(User.is_active == bool(is_active))
     users = query if isinstance(query, list) else query.all()
+
+    # Dynamically calculate and save temporary_status and status2 for each user
+    for user in users:
+        user.save_status()  # Recalculate and save status2 and temporary_status
+
     return jsonify([user.to_dict() for user in users])
 
 @app.route('/update_user_schedule/<user_id>', methods=['POST'])
 def update_user_schedule(user_id):
     try:
         data = request.get_json()
-        schedules = data.get('schedules', {})
+        new_schedules = data.get('schedules', {})
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if not user:
             return jsonify({"error": "User not found"}), 404
-        user.schedules = schedules
-        db.session.commit()
-        return jsonify({"message": "Schedule updated successfully!"}), 200
+
+        # Update schedules and recalculate temporary_status and status2
+        user.update_schedules(new_schedules)
+
+        return jsonify({
+            "message": "Schedule updated successfully!",
+            "temporary_status": user.temporary_status,  # Return the updated temporary status
+            "status2": user.status2  # Return the updated status2
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -195,7 +206,6 @@ def update_user_schedule(user_id):
 def update_user():
     try:
         data = request.get_json()
-       # user_id = data.get('user_id')
         user_id = data.get('user_id')  # No need to normalize or decrypt
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
@@ -207,7 +217,10 @@ def update_user():
         user.email = data.get('email', user.email)
         user.program = data.get('program', user.program)
         user.schedules = data.get('schedules', user.schedules)
-        db.session.commit()
+
+        # Recalculate and save status2 and temporary_status
+        user.save_status()
+
         return jsonify({"message": "User updated successfully", "user": user.to_dict()}), 200
     except IntegrityError:
         db.session.rollback()

@@ -3,6 +3,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from cryptography.fernet import Fernet
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 #  Load environment variables from .env
 #load_dotenv()
@@ -51,7 +52,42 @@ class User(db.Model):
 
     # New column to store the date when the user was archived
     archived_date = db.Column(db.DateTime, nullable=True)
-    # Convert the User object into a dictionary for easy JSON serialization
+
+    # Temporary status column
+    temporary_status = db.Column(db.String(50), nullable=True)
+
+    # Rename column to status2
+    status2 = db.Column(db.String(100), nullable=True, default="N/A")  # Default value is "N/A"
+
+    def calculate_status(self):
+        """Calculate the user's temporary status and update status2."""
+        now = datetime.now()
+        current_day = now.strftime("%A")  # Get the current day (e.g., "Monday")
+        current_time = now.strftime("%H:%M")  # Get the current time (e.g., "14:30")
+
+        # Check if the user has access during the current period
+        if self.is_active and self.schedules and current_day in self.schedules:
+            for period in self.schedules[current_day]:
+                start_time, end_time = period.split(" - ")
+                if start_time <= current_time <= end_time:
+                    self.temporary_status = "Can Activate Now"
+                    self.status2 = 1  # Set status2 to 1 if active and can activate now
+                    return
+
+        self.temporary_status = "Can't Activate Now"
+        self.status2 = 0  # Set status2 to 0 if inactive or can't activate now
+
+    def save_status(self):
+        """Recalculate and save the status2 and temporary_status to the database."""
+        self.calculate_status()
+        db.session.add(self)
+        db.session.commit()
+
+    def update_schedules(self, new_schedules):
+        """Update the user's schedules and recalculate the temporary status."""
+        self.schedules = new_schedules
+        self.save_status()
+
     def to_dict(self):
         """Convert model object to dictionary for JSON responses."""
         return {
@@ -61,7 +97,7 @@ class User(db.Model):
             "user_id": self.user_id,  
             "program": self.program,
             "is_active": self.is_active,
-            "expiration_time": self.expiration_time.isoformat() if self.expiration_time else None,  # Ensure ISO format
+            "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,  # Format as date
             "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
         }

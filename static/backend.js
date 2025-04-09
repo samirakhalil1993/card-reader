@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.insertCell(2).textContent = user.user_id;
                         row.insertCell(3).textContent = user.program;
                         row.insertCell(4).textContent = user.is_active
-                            ? 'Active'
+                            ? 'Has Access'
                             : `Archived: ${user.archived_date ? new Date(user.archived_date).toISOString().split('T')[0] : ''}`;
                         row.insertCell(5).textContent = user.is_active ? user.expiration_time : '';
                         const schedulesCell = row.insertCell(6);
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     });
                 } else if (searchTerm) {
-                    usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>'; // Update colspan to 7
+                    usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>'; // Updated colspan to 7
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.insertCell(1).textContent = formData.email;
                 row.insertCell(2).textContent = formData.user_id;
                 row.insertCell(3).textContent = formData.program; // Add program to the table
-                row.insertCell(4).textContent = 'Active'; // Default status
+                row.insertCell(4).textContent = 'Has Access'; // Default status
                 row.insertCell(5).textContent = result.expiration_time ? new Date(result.expiration_time).toISOString().split('T')[0] : 'No Expiration';
                 row.insertCell(6).textContent = 'No schedule'; // Default schedule
 

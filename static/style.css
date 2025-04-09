@@ -239,6 +239,25 @@ td {
     word-wrap: break-word; /* Ensure long text wraps inside the cell */
 }
 
+/* Add specific styling for the Temporary Status column */
+.review-users-box th:nth-child(7),
+.review-users-box td:nth-child(7) {
+    text-align: center; /* Center the text */
+    padding: 12px; /* Add padding for spacing */
+    border: 1px solid #ddd; /* Add a light border around each cell */
+    word-wrap: break-word; /* Ensure long text wraps inside the cell */
+    width: 20%; /* Increase the width of the Schedules column */
+}
+
+/* Add specific styling for the Status2 column */
+.review-users-box th:nth-child(9),
+.review-users-box td:nth-child(9) {
+    text-align: center; /* Center the text */
+    padding: 12px; /* Add padding for spacing */
+    border: 1px solid #ddd; /* Add a light border around each cell */
+    word-wrap: break-word; /* Ensure long text wraps inside the cell */
+}
+
 /* Alternating row colors for better readability */
 .review-users-box tr:nth-child(even) {
   background-color: #f9f9f9; /* Light gray background for even rows */
