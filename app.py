@@ -29,9 +29,9 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
-def validate_personnummer(personnummer):
-    # Validate that the personnummer is exactly 10 digits
-    return re.match(r'^\d{10}$', personnummer) is not None
+def validate_personnummer(useridnumber):
+    # Validate that the useridnumber is exactly 10 digits
+    return re.match(r'^\d+$', useridnumber) is not None
 
 def validate_bth_email(email):
     return email.endswith('@student.bth.se')
@@ -80,9 +80,9 @@ def add_user():
     try:
         data = request.get_json()
 
-        # Validate Personnummer format (10 digits)
+        # Validate User ID Number format (10 digits)
         if not validate_personnummer(data['user_id']):
-            return jsonify({"error": "Invalid Personnummer format. It must be exactly 10 digits."}), 400
+            return jsonify({"error": "Invalid User ID Number format. It must be exactly 10 digits."}), 400
 
         # Validate BTH email
         if not validate_bth_email(data['email']):
