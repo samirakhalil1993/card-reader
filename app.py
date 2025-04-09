@@ -2,7 +2,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
-from models import db, User, cipher_suite
+from models import db, User #, cipher_suite
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from dotenv import load_dotenv
@@ -12,7 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
 # Load environment variables from .env file
-load_dotenv()
+#load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -78,32 +78,50 @@ def admin_interface():
 def add_user():
     try:
         data = request.get_json()
+
+        # Validate Personnummer format
         if not validate_personnummer(data['user_id']):
-            return jsonify({"error": "Invalid Personnummer format."}), 400
+            return jsonify({"error": "Invalid Personnummer format. Use YYYYMMDDXXXX or YYYYMMDD-XXXX."}), 400
+
+        # Validate BTH email
         if not validate_bth_email(data['email']):
-            return jsonify({"error": "Invalid email address."}), 400
+            return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
+
+        # Set expiration date to 1 year from now
         expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
+
+        # Create and add new user
         new_user = User(
             name=data['name'],
             email=data['email'],
             program=data.get('program', 'Unknown'),
-            expiration_time=expiration_time
+            expiration_time=expiration_time,
+            user_id=data['user_id']
         )
-        new_user.user_id = data['user_id']
+
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({"message": "User added successfully!", "expiration_time": expiration_time.isoformat()}), 201
+
+        return jsonify({
+            "message": "User added successfully!",
+            "expiration_time": expiration_time.isoformat()
+        }), 201
+
     except IntegrityError:
         db.session.rollback()
         return jsonify({"error": "User with this email or UserID already exists!"}), 400
+
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/archive_user', methods=['POST'])
 def archive_user():
     try:
         data = request.get_json()
-        user_id = data.get('user_id').strip().replace("-", "")
+        #user_id = data.get('user_id').strip().replace("-", "")
+        user_id = data.get('user_id')  # No need to normalize or decrypt
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
@@ -124,7 +142,8 @@ def archive_user():
 def reactivate_user():
     try:
         data = request.get_json()
-        user_id = data.get('user_id').strip().replace("-", "")
+        #user_id = data.get('user_id').strip().replace("-", "")
+        user_id = data.get('user_id')  # No need to normalize or decrypt
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
@@ -175,7 +194,8 @@ def update_user_schedule(user_id):
 def update_user():
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+       # user_id = data.get('user_id')
+        user_id = data.get('user_id')  # No need to normalize or decrypt
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if not user:
@@ -197,3 +217,4 @@ def update_user():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    #app.run(debug=True, port=5001)
