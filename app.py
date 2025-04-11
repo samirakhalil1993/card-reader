@@ -58,6 +58,30 @@ atexit.register(lambda: scheduler.shutdown())
 def index():
     return render_template('index.html')
 
+@app.route('/update_code_timestamp', methods=['POST'])
+def update_code_timestamp():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    random_code = data.get('random_code')
+    
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Use CET, or UTC, or whichever zone you want
+    cet = pytz_timezone('Europe/Stockholm')
+    now_cet = datetime.now(cet)
+    
+    # Store HH:MM only (e.g., "20:46")
+    user.code_generated_time = now_cet.strftime('%H:%M')
+    user.random_code = random_code
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Code generated successfully!",
+        "code_generated_time": user.code_generated_time
+    }), 200
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     error = None

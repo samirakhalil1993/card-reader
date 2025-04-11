@@ -59,6 +59,12 @@ class User(db.Model):
     # Rename column to status2
     status2 = db.Column(db.String(100), nullable=True, default="N/A")  # Default value is "N/A"
 
+    #code_generated_time = db.Column(db.DateTime, nullable=True)
+    code_generated_time = db.Column(db.String(5), nullable=True)
+
+    random_code = db.Column(db.String(20), nullable=True)
+
+
     def calculate_status(self):
         """Calculate the user's temporary status and update status2."""
         now = datetime.now()
@@ -97,9 +103,11 @@ class User(db.Model):
             "user_id": self.user_id,  
             "program": self.program,
             "is_active": self.is_active,
-            "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,  # Format as date
+            "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,
             "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
+            "code_generated_time": self.code_generated_time,
+            "random_code": self.random_code        
         }
 
     # @hybrid_property

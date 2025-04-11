@@ -566,3 +566,53 @@ button.delete-button:hover {
   width: 100%;
   font-size: 0.9rem;
 }
+/* Style for the generate code button */
+.generate-code-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.generate-code-btn:hover {
+  background-color: #45a049;
+}
+
+/* Additional styling for the code modal */
+#copyCodeBtn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px auto;
+  display: block;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#copyCodeBtn:hover {
+  background-color: #0b7dda;
+}
+
+.select-all-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-all-btn:hover {
+  background-color: #0056b3;
+}

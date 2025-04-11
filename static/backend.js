@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch users and update the table
     function fetchUsers(searchTerm = '', isActive = null) {
+        
         let url = '/review_users';
         const params = new URLSearchParams();
         if (searchTerm) {
@@ -59,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 usersTableBody.innerHTML = "";
                 if (data.length > 0) {
                     data.forEach(user => {
+                        
                         const row = usersTableBody.insertRow();
                         row.insertCell(0).textContent = user.name;
                         row.insertCell(1).textContent = user.email;
@@ -67,28 +69,133 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.insertCell(4).textContent = user.is_active
                             ? 'Has Access'
                             : `Archived: ${user.archived_date ? new Date(user.archived_date).toISOString().split('T')[0] : ''}`;
-                        row.insertCell(5).textContent = user.is_active ? user.expiration_time : '';
+                        row.insertCell(5).textContent = user.is_active ? 
+                        (user.expiration_time ? user.expiration_time : '') : '';
                         const schedulesCell = row.insertCell(6);
                         schedulesCell.innerHTML = ""; // Clear existing content
                         if (user.schedules && Object.keys(user.schedules).length > 0) {
                             const scheduleList = document.createElement('ul');
-                            for (const [day, periods] of Object.entries(user.schedules)) {
-                                const listItem = document.createElement('li');
-                                listItem.innerHTML = `<strong>${day}:</strong> ${periods.join(', ')}`;
-                                scheduleList.appendChild(listItem);
-                            }
+                            const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            
+                            // Loop through days in correct order
+                            dayOrder.forEach(day => {
+                                if (user.schedules[day]) {
+                                    const listItem = document.createElement('li');
+                                    listItem.innerHTML = `<strong>${day}:</strong> ${user.schedules[day].join(', ')}`;
+                                    scheduleList.appendChild(listItem);
+                                }
+                            });
+                            
                             schedulesCell.appendChild(scheduleList);
-                        } else {
+                        }
+                        else {
                             schedulesCell.textContent = 'No scheduling periods selected';
                         }
+                         // Add the action column with the generate code button
+                        const actionCell = row.insertCell(7);
+                        const generateButton = document.createElement('button');
+                        generateButton.className = 'generate-code-btn';
+                        generateButton.setAttribute('data-userid', user.user_id);
+                        generateButton.textContent = 'Generate Code';
+                        actionCell.appendChild(generateButton);
                     });
                 } else if (searchTerm) {
-                    usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>'; // Updated colspan to 7
+                    // usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>'; // Updated colspan to 7
+                    usersTableBody.innerHTML = '<tr><td colspan="8">No users found</td></tr>'; // Updated colspan to 8
                 }
             })
             .catch(error => console.error('Error:', error));
     }
+    const codeModal = document.createElement('div');
+    codeModal.id = 'codeModal';
+    codeModal.className = 'modal';
+    codeModal.innerHTML = `
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Generated Code</h2>
+            <div id="generatedCode" style="font-size: 24px; text-align: center; margin: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;"></div>
+            <button id="copyCodeBtn">Copy Code</button>
+        </div>
+    `;
+    document.body.appendChild(codeModal);
+    
+    const closeCodeModal = codeModal.querySelector('.close');
+    closeCodeModal.onclick = function() {
+        codeModal.style.display = "none";
+    }
+    
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+    copyCodeBtn.addEventListener('click', function() {
+        const codeText = document.getElementById('generatedCode').textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+            alert('Code copied to clipboard!');
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
+    });
+    
+    // Function to generate random 9-digit code
+    function generateRandomCode() {
+        let code = '';
+        for (let i = 0; i < 9; i++) {
+            code += Math.floor(Math.random() * 10); // Random digit 0-9
+        }
+        return code;
+    }
+    
+    // Add event listener for the generate code buttons
+    // Add this at the top of your DOMContentLoaded function
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('generate-code-btn')) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const userId = event.target.getAttribute('data-userid');
+        const randomCode = generateRandomCode();
+        
+        // Display the code in modal
+        document.getElementById('generatedCode').textContent = randomCode;
+        codeModal.style.display = 'block';
+        
+        // Update timestamp and code in the database
+        fetch('/update_code_timestamp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                random_code: randomCode
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.message) {
+                console.error('Error updating timestamp:', data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    }, true);
 
+    
+    // Close the code modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target == codeModal) {
+            codeModal.style.display = "none";
+        }
+        // Keep your existing modal close handlers
+        if (event.target == updateModal) {
+            updateModal.style.display = "none";
+        }
+        if (event.target == addUserModal) {
+            addUserModal.style.display = "none";
+        }
+        if (event.target == removeUserModal) {
+            removeUserModal.style.display = "none";
+        }
+        if (event.target == scheduleModal) {
+            scheduleModal.style.display = "none";
+        }
+    }
     // Function to update the schedules column dynamically
     function updateSchedulesColumn(userId, updatedSchedules) {
         const rows = usersTableBody.querySelectorAll("tr");
@@ -100,13 +207,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (updatedSchedules && Object.keys(updatedSchedules).length > 0) {
                     const scheduleList = document.createElement('ul');
-                    for (const [day, periods] of Object.entries(updatedSchedules)) {
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `<strong>${day}:</strong> ${periods.join(', ')}`;
-                        scheduleList.appendChild(listItem);
-                    }
+                    const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    
+                    // Loop through days in correct order
+                    dayOrder.forEach(day => {
+                        if (updatedSchedules[day]) {
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `<strong>${day}:</strong> ${updatedSchedules[day].join(', ')}`;
+                            scheduleList.appendChild(listItem);
+                        }
+                    });
+                    
                     schedulesCell.appendChild(scheduleList);
-                } else {
+                }
+                else {
                     schedulesCell.textContent = 'No scheduling periods selected';
                 }
             }
@@ -124,7 +238,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     addUserForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-
         const formData = {
             name: addUserForm.elements["name"].value,
             email: addUserForm.elements["email"].value,
@@ -157,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.insertCell(2).textContent = formData.user_id;
                 row.insertCell(3).textContent = formData.program; // Add program to the table
                 row.insertCell(4).textContent = 'Has Access'; // Default status
-                row.insertCell(5).textContent = result.expiration_time ? new Date(result.expiration_time).toISOString().split('T')[0] : 'No Expiration';
+                row.insertCell(5).textContent = result.expiration_time ? new Date(result.expiration_time).toISOString().split('T')[0] : '';
                 row.insertCell(6).textContent = 'No schedule'; // Default schedule
 
                 addUserForm.reset();
@@ -235,20 +348,64 @@ document.addEventListener("DOMContentLoaded", function () {
         updateScheduleTableBody.innerHTML = ""; // Clear the table body
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; 
         const periods = ["08:00 - 12:00", "12:00 - 16:00", "16:00 - 20:00", "20:00 - 23:00"];
-
+    
         days.forEach(day => {
             const row = updateScheduleTableBody.insertRow();
-            const dayCell = row.insertCell(0);
+            
+            // Add select-all button cell
+            const selectAllCell = row.insertCell(0);
+            const selectAllBtn = document.createElement('button');
+            selectAllBtn.type = 'button';
+            selectAllBtn.className = 'select-all-btn';
+            selectAllBtn.setAttribute('data-day', day);
+            selectAllBtn.title = 'Toggle all time slots for ' + day;
+            
+            // Initialize button state based on whether all periods are selected for this day
+            const allSelected = periods.every(period => schedule[day]?.includes(period));
+            selectAllBtn.textContent = allSelected ? '✓' : '';
+            
+            // Add click handler for the select-all button
+            selectAllBtn.onclick = function() {
+                const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+                
+                // Check if all boxes are already checked
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                // If all are checked, uncheck all; otherwise, check all
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                });
+                
+                // Update button appearance
+                selectAllBtn.textContent = !allChecked ? '✓' : '';
+            };
+            
+            selectAllCell.appendChild(selectAllBtn);
+            
+            // Add day name cell
+            const dayCell = row.insertCell(1);
             dayCell.textContent = day;
-
+    
+            // Add period checkboxes
             periods.forEach(period => {
                 const cell = row.insertCell();
                 const isSelected = schedule[day]?.includes(period); // Check if the period is selected
-                cell.innerHTML = `<input type="checkbox" ${isSelected ? "checked" : ""} data-day="${day}" data-period="${period}">`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isSelected;
+                checkbox.setAttribute('data-day', day);
+                checkbox.setAttribute('data-period', period);
+                
+                // Add event listener to update the button state when checkbox is clicked
+                checkbox.addEventListener('change', function() {
+                    const allNowChecked = Array.from(row.querySelectorAll('input[type="checkbox"]')).every(cb => cb.checked);
+                    selectAllBtn.textContent = allNowChecked ? '✓' : '';
+                });
+                
+                cell.appendChild(checkbox);
             });
         });
     }
-
     // Function to fetch and populate user data in the update modal
     function populateUpdateModal(user) {
         document.getElementById("updateName").value = user.name;

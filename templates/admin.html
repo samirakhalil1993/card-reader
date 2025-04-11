@@ -60,6 +60,7 @@
                   <th>Status</th> <!-- Add Status column header -->
                   <th class="expiration-time-header">Expiration Time</th> <!-- Add Expiration Time column header -->
                   <th>Schedules</th> <!-- Add Schedules column header -->
+                  <th>Random Code</th> <!-- New column for actions -->
               </tr>
           </thead>
           <tbody>
@@ -88,6 +89,9 @@
                       No schedule
                       {% endif %}
                   </td>
+                  <td>
+                    <button class="generate-code-btn" data-userid="{{ user.user_id }}">Generate Code</button>
+                </td>
               </tr>
               {% endfor %}
           </tbody>
@@ -156,6 +160,7 @@
       <table id="updateScheduleTable">
         <thead>
           <tr>
+            <th></th> <!-- Empty header for select-all buttons -->
             <th>Day</th>
             <th>08:00 - 12:00</th>
             <th>12:00 - 16:00</th>
