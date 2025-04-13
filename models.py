@@ -53,8 +53,8 @@ class User(db.Model):
     # New column to store the date when the user was archived
     archived_date = db.Column(db.DateTime, nullable=True)
 
-    # Temporary status column
-    temporary_status = db.Column(db.String(50), nullable=True)
+    # Temporary status column with a default value
+    temporary_status = db.Column(db.String(50), nullable=False, default="Unknown")  # Default value is "Unknown"
 
     # Rename column to status2
     status2 = db.Column(db.String(100), nullable=True, default="N/A")  # Default value is "N/A"

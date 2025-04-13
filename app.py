@@ -29,9 +29,9 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
-def validate_personnummer(useridnumber):
-    # Validate that the useridnumber is exactly 10 digits
-    return re.match(r'^\d+$', useridnumber) is not None
+def validate_user_id(useridnumber):
+    # Validate that the useridnumber is exactly 9 or 10 digits
+    return re.match(r'^\d{9,10}$', useridnumber) is not None
 
 def validate_bth_email(email):
     return email.endswith('@student.bth.se')
@@ -104,42 +104,46 @@ def add_user():
     try:
         data = request.get_json()
 
-        # Validate User ID Number format (10 digits)
-        if not validate_personnummer(data['user_id']):
-            return jsonify({"error": "Invalid User ID Number format. It must be exactly 10 digits."}), 400
+        # Check if required fields are present
+        if 'user_id' not in data or 'email' not in data or 'name' not in data:
+            return jsonify({"error": "Missing required fields: 'user_id', 'email', or 'name'"}), 400
+
+        # Validate User ID Number format (9 or 10 digits)
+        if not validate_user_id(data['user_id']):
+            return jsonify({"error": "Invalid User ID Number format. It must be exactly 9 or 10 digits."}), 400
 
         # Validate BTH email
         if not validate_bth_email(data['email']):
             return jsonify({"error": "Invalid email address. Only BTH email addresses are allowed."}), 400
 
+        # Check if a user with the same email or user_id already exists
+        existing_user = User.query.filter(
+            (User.email == data['email']) | (User.user_id == data['user_id'])
+        ).first()
+        if existing_user:
+            return jsonify({"error": "User with this email or UserID already exists!"}), 400
+
         # Set expiration date to 1 year from now
-        expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
+        data['expiration_time'] = datetime.now(timezone.utc) + timedelta(days=365)
 
-        # Create and add new user with status2
+        # Create a new User instance
         new_user = User(
-            name=data['name'],
+            user_id=data['user_id'],
             email=data['email'],
-            program=data.get('program', 'Unknown'),
-            expiration_time=expiration_time,
-            user_id=data['user_id']  # Use the 10-digit user_id as-is
+            name=data['name'],
+            expiration_time=data['expiration_time']
         )
-
         db.session.add(new_user)
         db.session.commit()
 
         return jsonify({
             "message": "User added successfully!",
-            "expiration_time": expiration_time.isoformat()
+            "expiration_time": new_user.expiration_time.isoformat()
         }), 201
-
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"error": "User with this email or UserID already exists!"}), 400
 
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-
 
 @app.route('/archive_user', methods=['POST'])
 def archive_user():
