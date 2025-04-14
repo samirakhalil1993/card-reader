@@ -68,18 +68,17 @@ def update_code_timestamp():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Use CET, or UTC, or whichever zone you want
-    cet = pytz_timezone('Europe/Stockholm')
-    now_cet = datetime.now(cet)
+    # Use Stockholm timezone (which covers Karlskrona as well)
+    sweden_tz = pytz_timezone('Europe/Stockholm')
+    sweden_time = datetime.now(sweden_tz)
     
-    # Store HH:MM only (e.g., "20:46")
-    user.code_generated_time = now_cet.strftime('%H:%M')
+    user.code_generated_time = sweden_time
     user.random_code = random_code
     db.session.commit()
     
     return jsonify({
         "message": "Code generated successfully!",
-        "code_generated_time": user.code_generated_time
+        "code_generated_time": sweden_time.strftime('%Y-%m-%d %H:%M:%S')
     }), 200
 
 @app.route('/admin', methods=['GET', 'POST'])

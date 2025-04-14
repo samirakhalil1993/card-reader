@@ -60,7 +60,7 @@ class User(db.Model):
     status2 = db.Column(db.String(100), nullable=True, default="N/A")  # Default value is "N/A"
 
     #code_generated_time = db.Column(db.DateTime, nullable=True)
-    code_generated_time = db.Column(db.String(5), nullable=True)
+    code_generated_time = db.Column(db.DateTime, nullable=True)
 
     random_code = db.Column(db.String(20), nullable=True)
 
@@ -106,7 +106,7 @@ class User(db.Model):
             "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,
             "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
-            "code_generated_time": self.code_generated_time,
+            "code_generated_time": self.code_generated_time.strftime('%Y-%m-%d %H:%M:%S') if self.code_generated_time else None,
             "random_code": self.random_code        
         }
 
