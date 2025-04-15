@@ -123,14 +123,17 @@ def add_user():
             return jsonify({"error": "User with this email or UserID already exists!"}), 400
 
         # Set expiration date to 1 year from now
-        data['expiration_time'] = datetime.now(timezone.utc) + timedelta(days=365)
+        expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
 
         # Create a new User instance
         new_user = User(
             user_id=data['user_id'],
             email=data['email'],
             name=data['name'],
-            expiration_time=data['expiration_time']
+            program=data.get('program', 'Unknown'),
+            expiration_time=expiration_time,
+            schedules=data.get('schedules', {}),
+            is_super_user=data.get('is_super_user', False)  # Default to False
         )
         db.session.add(new_user)
         db.session.commit()
@@ -153,12 +156,16 @@ def archive_user():
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
-            user.is_active = False
+            was_super_user = user.is_super_user  # Check if the user was a super user
+            user.is_active = False  # Set is_active to False
+            if was_super_user:
+                user.is_super_user = False  # Remove super user status
             cet = pytz_timezone('Europe/Stockholm')  # Use pytz timezone with alias
             user.archived_date = datetime.now(cet)  # Set the archived date in CET
             db.session.commit()
             return jsonify({
-                "message": f"User {user.name} archived successfully!",
+                "message": f"User {user.name} archived successfully!"
+                           f"{' Super user status removed.' if was_super_user else ''}",
                 "archived_date": user.archived_date.isoformat()
             }), 200
         else:
@@ -192,6 +199,7 @@ def review_users():
     name = request.args.get('name')
     user_id = request.args.get('user_id')
     is_active = request.args.get('is_active', type=int)
+    is_super_user = request.args.get('is_super_user', type=bool)  # New filter for super users
     query = User.query
     if name:
         query = query.filter(User.name.ilike(f"%{name}%"))
@@ -200,6 +208,10 @@ def review_users():
         query = [u for u in all_users if u.user_id == user_id]
     if is_active is not None:
         query = query.filter(User.is_active == bool(is_active))
+        if is_active == 1:  # Exclude super users from active users
+            query = query.filter(User.is_super_user == False)
+    if is_super_user:  # Filter for super users
+        query = query.filter(User.is_super_user == True)
     users = query if isinstance(query, list) else query.all()
 
     # Dynamically calculate and save temporary_status and status2 for each user
@@ -240,10 +252,16 @@ def update_user():
             return jsonify({"error": "User not found"}), 404
         if data.get('email') != user.email and not validate_bth_email(data['email']):
             return jsonify({"error": "Invalid email address."}), 400
+
+        # Prevent making an archived user a super user
+        if not user.is_active and data.get('is_super_user', user.is_super_user):
+            return jsonify({"error": "Cannot make an archived user a super user. Reactivate the user first."}), 400
+
         user.name = data.get('name', user.name)
         user.email = data.get('email', user.email)
         user.program = data.get('program', user.program)
         user.schedules = data.get('schedules', user.schedules)
+        user.is_super_user = data.get('is_super_user', user.is_super_user)  # Update super user status
 
         # Recalculate and save status2 and temporary_status
         user.save_status()

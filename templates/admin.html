@@ -46,6 +46,7 @@
   <div class="filter-buttons">
     <button id="showActiveUsers" class="filter-button">Active Users</button>
     <button id="showArchivedUsers" class="filter-button">Archived Users</button>
+    <button id="showSuperUsers" class="filter-button">Super Users</button> <!-- New button for super users -->
   </div>
 
   <!-- Review Users Section -->
@@ -59,8 +60,7 @@
                   <th>Program</th>
                   <th>Status</th> <!-- Add Status column header -->
                   <th class="expiration-time-header">Expiration Time</th> <!-- Add Expiration Time column header -->
-                  <th>Schedules</th> <!-- Add Schedules column header -->
-                  <th>Random Code</th> <!-- New column for actions -->
+                  <th>Random Code</th> <!-- Updated column for actions -->
               </tr>
           </thead>
           <tbody>
@@ -78,17 +78,6 @@
                       {% endif %}
                   </td>
                   <td class="expiration-time-data">{{ user.expiration_time if user.is_active else '' }}</td> <!-- Conditionally render expiration time -->
-                  <td>
-                      {% if user.schedules %}
-                      <ul>
-                          {% for day, periods in user.schedules.items() %}
-                          <li><strong>{{ day }}:</strong> {{ periods | join(', ') }}</li>
-                          {% endfor %}
-                      </ul>
-                      {% else %}
-                      No schedule
-                      {% endif %}
-                  </td>
                   <td>
                     <button class="generate-code-btn" data-userid="{{ user.user_id }}">Generate Code</button>
                 </td>
@@ -118,6 +107,31 @@
           <option value="AI and Machine Learning"></option>
           <!-- Add more programs as needed -->
       </datalist>
+
+      <!-- Scheduling Section -->
+      <h3>Manage Schedule</h3>
+      <table id="addScheduleTable">
+        <thead>
+          <tr>
+            <th></th> <!-- Empty header for select-all buttons -->
+            <th>Day</th>
+            <th>08:00 - 12:00</th>
+            <th>12:00 - 16:00</th>
+            <th>16:00 - 20:00</th>
+            <th>20:00 - 23:00</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows for each day will be dynamically added here -->
+        </tbody>
+      </table>
+
+      <!-- Super User Checkbox -->
+      <label>
+        <input type="checkbox" name="is_super_user" />
+        Make this user a Super User
+      </label>
+
       <button type="submit">Add User</button>
     </form>
   </div>
@@ -172,6 +186,12 @@
           <!-- Rows for each day will be dynamically added here -->
         </tbody>
       </table>
+
+      <!-- Super User Checkbox -->
+      <label>
+        <input type="checkbox" name="is_super_user" id="updateIsSuperUser" />
+        Make this user a Super User
+      </label>
 
       <button type="submit">Update User</button>
       <button type="button" id="archiveUserButton" class="delete-button">Archive User</button>

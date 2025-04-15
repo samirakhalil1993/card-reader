@@ -21,11 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const updateScheduleTableBody = document.getElementById("updateScheduleTable").getElementsByTagName("tbody")[0];
 
+    const showSuperUsersButton = document.getElementById("showSuperUsers"); // Get the Super Users button
+
     let currentFilter = null; // Track the current filter state
     let currentUserId = null; // Track the current user ID for schedule management
 
     // Show the add user form when clicking the Add User box
     document.getElementById('addUserBox').addEventListener('click', function () {
+        populateAddScheduleTable();
         addUserModal.style.display = 'block'; // Display the modal when clicked
     });
 
@@ -41,15 +44,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to fetch users and update the table
-    function fetchUsers(searchTerm = '', isActive = null) {
-        
+    function fetchUsers(searchTerm = '', filter = null) {
         let url = '/review_users';
         const params = new URLSearchParams();
         if (searchTerm) {
             params.append('name', searchTerm);
         }
-        if (isActive !== null) {
-            params.append('is_active', isActive);
+        if (filter === 1 || filter === 0) {
+            params.append('is_active', filter);
+        } else if (filter === "super_users") {
+            params.append('is_super_user', true); // Add filter for super users
         }
         if (params.toString()) {
             url += `?${params.toString()}`;
@@ -60,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 usersTableBody.innerHTML = "";
                 if (data.length > 0) {
                     data.forEach(user => {
-                        
                         const row = usersTableBody.insertRow();
                         row.insertCell(0).textContent = user.name;
                         row.insertCell(1).textContent = user.email;
@@ -70,29 +73,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             ? 'Has Access'
                             : `Archived: ${user.archived_date ? new Date(user.archived_date).toISOString().split('T')[0] : ''}`;
                         row.insertCell(5).textContent = user.is_active ? 
-                        (user.expiration_time ? user.expiration_time : '') : '';
-                        const schedulesCell = row.insertCell(6);
-                        schedulesCell.innerHTML = ""; // Clear existing content
-                        if (user.schedules && Object.keys(user.schedules).length > 0) {
-                            const scheduleList = document.createElement('ul');
-                            const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-                            
-                            // Loop through days in correct order
-                            dayOrder.forEach(day => {
-                                if (user.schedules[day]) {
-                                    const listItem = document.createElement('li');
-                                    listItem.innerHTML = `<strong>${day}:</strong> ${user.schedules[day].join(', ')}`;
-                                    scheduleList.appendChild(listItem);
-                                }
-                            });
-                            
-                            schedulesCell.appendChild(scheduleList);
-                        }
-                        else {
-                            schedulesCell.textContent = 'No scheduling periods selected';
-                        }
-                         // Add the action column with the generate code button
-                        const actionCell = row.insertCell(7);
+                            (user.expiration_time ? user.expiration_time : '') : '';
+                        const actionCell = row.insertCell(6);
                         const generateButton = document.createElement('button');
                         generateButton.className = 'generate-code-btn';
                         generateButton.setAttribute('data-userid', user.user_id);
@@ -100,12 +82,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         actionCell.appendChild(generateButton);
                     });
                 } else if (searchTerm) {
-                    // usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>'; // Updated colspan to 7
-                    usersTableBody.innerHTML = '<tr><td colspan="8">No users found</td></tr>'; // Updated colspan to 8
+                    usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>';
                 }
             })
             .catch(error => console.error('Error:', error));
     }
+
     const codeModal = document.createElement('div');
     codeModal.id = 'codeModal';
     codeModal.className = 'modal';
@@ -238,11 +220,14 @@ document.addEventListener('click', function(event) {
 
     addUserForm.addEventListener("submit", async function (event) {
         event.preventDefault();
+
         const formData = {
-            name: addUserForm.elements["name"].value,
-            email: addUserForm.elements["email"].value,
-            user_id: addUserForm.elements["user_id"].value,
-            program: addUserForm.elements["program"].value // Allow custom program input
+            name: addUserForm.elements["name"].value.trim(),
+            email: addUserForm.elements["email"].value.trim().toLowerCase(),
+            user_id: addUserForm.elements["user_id"].value.trim(),
+            program: addUserForm.elements["program"].value.trim(),
+            schedules: collectAddScheduleData(), // Collect schedule data
+            is_super_user: addUserForm.elements["is_super_user"].checked, // Get super user status
         };
 
         // Client-side validation for BTH email
@@ -262,17 +247,7 @@ document.addEventListener('click', function(event) {
 
             if (response.ok) {
                 alert(result.message);  // Show success message
-
-                // Add the new user to the table immediately
-                const row = usersTableBody.insertRow();
-                row.insertCell(0).textContent = formData.name;
-                row.insertCell(1).textContent = formData.email;
-                row.insertCell(2).textContent = formData.user_id;
-                row.insertCell(3).textContent = formData.program; // Add program to the table
-                row.insertCell(4).textContent = 'Has Access'; // Default status
-                row.insertCell(5).textContent = result.expiration_time ? new Date(result.expiration_time).toISOString().split('T')[0] : '';
-                row.insertCell(6).textContent = 'No schedule'; // Default schedule
-
+                fetchUsers(); // Refresh the user table
                 addUserForm.reset();
                 addUserModal.style.display = "none"; // Close the modal
             } else {
@@ -412,6 +387,7 @@ document.addEventListener('click', function(event) {
         document.getElementById("updateEmail").value = user.email;
         document.getElementById("updateUserId").value = user.user_id;
         document.getElementById("updateProgram").value = user.program;
+        document.getElementById("updateIsSuperUser").checked = user.is_super_user; // Populate super user status
 
         // Populate the schedule table
         populateUpdateScheduleTable(user.schedules || {});
@@ -438,7 +414,8 @@ document.addEventListener('click', function(event) {
             email: document.getElementById("updateEmail").value,
             user_id: document.getElementById("updateUserId").value,
             program: document.getElementById("updateProgram").value, // Allow custom program input
-            schedules: {} // Collect updated schedules
+            schedules: {}, // Collect updated schedules
+            is_super_user: document.getElementById("updateIsSuperUser").checked, // Get super user status
         };
 
         // Collect schedule data from the table
@@ -576,6 +553,20 @@ document.addEventListener('click', function(event) {
         fetchUsers(searchInput.value, currentFilter);
     });
 
+    // Add event listener for the Super Users button
+    showSuperUsersButton.addEventListener("click", function () {
+        if (currentFilter === "super_users") {
+            currentFilter = null; // Reset filter
+            showSuperUsersButton.classList.remove("active");
+        } else {
+            currentFilter = "super_users"; // Set filter to super users
+            showSuperUsersButton.classList.add("active");
+            showActiveUsersButton.classList.remove("active");
+            showArchivedUsersButton.classList.remove("active");
+        }
+        fetchUsers(searchInput.value, currentFilter);
+    });
+
     // Function to fetch and display the schedule for a user
     function fetchUserSchedule(userId) {
         currentUserId = userId;
@@ -652,3 +643,64 @@ document.addEventListener('click', function(event) {
         }
     });
 });
+
+// Populate the schedule table in the "Add User" modal
+function populateAddScheduleTable() {
+    const addScheduleTableBody = document.getElementById("addScheduleTable").getElementsByTagName("tbody")[0];
+    addScheduleTableBody.innerHTML = ""; // Clear the table body
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const periods = ["08:00 - 12:00", "12:00 - 16:00", "16:00 - 20:00", "20:00 - 23:00"];
+
+    days.forEach(day => {
+        const row = addScheduleTableBody.insertRow();
+
+        // Add "Select All" button cell
+        const selectAllCell = row.insertCell(0);
+        const selectAllBtn = document.createElement('button');
+        selectAllBtn.type = 'button';
+        selectAllBtn.className = 'select-all-btn';
+        selectAllBtn.setAttribute('data-day', day);
+        selectAllBtn.title = `Select all time slots for ${day}`;
+        selectAllCell.appendChild(selectAllBtn);
+
+        // Add event listener for "Select All" button
+        selectAllBtn.addEventListener('click', function () {
+            const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked); // Check if all are selected
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked; // Toggle all checkboxes
+            });
+
+            // Update button appearance
+            selectAllBtn.textContent = !allChecked ? '✓' : '';
+        });
+
+        // Add day name cell
+        const dayCell = row.insertCell(1);
+        dayCell.textContent = day;
+
+        // Add period checkboxes
+        periods.forEach(period => {
+            const cell = row.insertCell();
+            cell.innerHTML = `<input type="checkbox" data-day="${day}" data-period="${period}">`;
+        });
+    });
+}
+
+// Collect schedule data from the "Add User" modal
+function collectAddScheduleData() {
+    const schedule = {};
+    const checkboxes = document.getElementById("addScheduleTable").querySelectorAll("input[type='checkbox']");
+    checkboxes.forEach(checkbox => {
+        const day = checkbox.getAttribute("data-day");
+        const period = checkbox.getAttribute("data-period");
+
+        if (checkbox.checked) {
+            if (!schedule[day]) {
+                schedule[day] = [];
+            }
+            schedule[day].push(period);
+        }
+    });
+    return schedule;
+}

@@ -64,9 +64,16 @@ class User(db.Model):
 
     random_code = db.Column(db.String(20), nullable=True)
 
+    # New column to indicate if the user is a super user
+    is_super_user = db.Column(db.Boolean, default=False)  # Default to False
 
     def calculate_status(self):
         """Calculate the user's temporary status and update status2."""
+        if self.is_super_user:
+            self.temporary_status = "Super User - Always Active"
+            self.status2 = 1  # Super users are always active
+            return
+
         now = datetime.now()
         current_day = now.strftime("%A")  # Get the current day (e.g., "Monday")
         current_time = now.strftime("%H:%M")  # Get the current time (e.g., "14:30")
@@ -107,7 +114,8 @@ class User(db.Model):
             "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
             "code_generated_time": self.code_generated_time.strftime('%Y-%m-%d %H:%M:%S') if self.code_generated_time else None,
-            "random_code": self.random_code        
+            "random_code": self.random_code,
+            "is_super_user": self.is_super_user,  # Include super user status
         }
 
     # @hybrid_property
