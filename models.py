@@ -45,8 +45,7 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
 
     # Ensure expiration_time is defined as DateTime
-    expiration_time = db.Column(db.DateTime, nullable=True)  # Use db.DateTime for date and time storage
-
+    expiration_time = db.Column(db.Date, nullable=True)  # Use db.Date for date-only storage
     # Add a JSON column to store schedules
     schedules = db.Column(db.JSON, nullable=True, default=dict)  # Default to an empty dictionary
 
@@ -111,7 +110,7 @@ class User(db.Model):
             "program": self.program,
             "is_active": self.is_active,
             "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,
-            "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
+           # "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
             "code_generated_time": self.code_generated_time.strftime('%Y-%m-%d %H:%M:%S') if self.code_generated_time else None,
             "random_code": self.random_code,

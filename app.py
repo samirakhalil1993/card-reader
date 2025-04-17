@@ -123,8 +123,7 @@ def add_user():
             return jsonify({"error": "User with this email or UserID already exists!"}), 400
 
         # Set expiration date to 1 year from now
-        expiration_time = datetime.now(timezone.utc) + timedelta(days=365)
-
+        expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()
         # Create a new User instance
         new_user = User(
             user_id=data['user_id'],
@@ -183,7 +182,7 @@ def reactivate_user():
         user = next((u for u in all_users if u.user_id == user_id), None)
         if user:
             if not user.is_active:
-                user.expiration_time = datetime.now(timezone.utc) + timedelta(days=365)  # Use datetime.timezone.utc
+                user.expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()
             user.is_active = True
             db.session.commit()
             return jsonify({
