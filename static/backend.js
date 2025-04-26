@@ -52,8 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (filter === 1 || filter === 0) {
             params.append('is_active', filter);
-        } else if (filter === "super_users") {
-            params.append('is_super_user', true); // Add filter for super users
         }
         if (params.toString()) {
             url += `?${params.toString()}`;
@@ -61,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                usersTableBody.innerHTML = "";
+                usersTableBody.innerHTML = ""; // Clear the table body
                 if (data.length > 0) {
                     data.forEach(user => {
                         const row = usersTableBody.insertRow();
@@ -74,7 +72,48 @@ document.addEventListener("DOMContentLoaded", function () {
                             : `Archived: ${user.archived_date ? new Date(user.archived_date).toISOString().split('T')[0] : ''}`;
                         row.insertCell(5).textContent = user.is_active ? 
                             (user.expiration_time ? user.expiration_time : '') : '';
-                        const actionCell = row.insertCell(6);
+
+                        // Render schedules with hover functionality
+                        const schedulesCell = row.insertCell(6);
+                        const viewScheduleText = document.createElement('div');
+                        viewScheduleText.className = 'view-schedule-box'; // Apply the blue box styling
+                        viewScheduleText.textContent = 'View Schedule';
+
+                        const scheduleBox = document.createElement('div');
+                        scheduleBox.className = 'schedule-box';
+                        scheduleBox.style.display = 'none'; // Initially hidden
+
+                        if (user.schedules && Object.keys(user.schedules).length > 0) {
+                            const scheduleList = document.createElement('ul');
+                            const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            
+                            // Loop through days in correct order
+                            dayOrder.forEach(day => {
+                                if (user.schedules[day]) {
+                                    const listItem = document.createElement('li');
+                                    listItem.innerHTML = `<strong>${day}:</strong> ${user.schedules[day].join(', ')}`;
+                                    scheduleList.appendChild(listItem);
+                                }
+                            });
+                            
+                            scheduleBox.appendChild(scheduleList);
+                        } else {
+                            scheduleBox.textContent = 'No scheduling periods selected';
+                        }
+
+                        // Add hover events to show and hide the schedule box
+                        viewScheduleText.addEventListener('mouseover', () => {
+                            scheduleBox.style.display = 'block';
+                        });
+                        viewScheduleText.addEventListener('mouseout', () => {
+                            scheduleBox.style.display = 'none';
+                        });
+
+                        schedulesCell.appendChild(viewScheduleText);
+                        schedulesCell.appendChild(scheduleBox);
+
+                        // Add the action column with the generate code button
+                        const actionCell = row.insertCell(7);
                         const generateButton = document.createElement('button');
                         generateButton.className = 'generate-code-btn';
                         generateButton.setAttribute('data-userid', user.user_id);
@@ -82,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         actionCell.appendChild(generateButton);
                     });
                 } else if (searchTerm) {
-                    usersTableBody.innerHTML = '<tr><td colspan="7">No users found</td></tr>';
+                    usersTableBody.innerHTML = '<tr><td colspan="8">No users found</td></tr>';
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -187,6 +226,14 @@ document.addEventListener('click', function(event) {
                 const schedulesCell = row.cells[6]; // Get the Schedules column
                 schedulesCell.innerHTML = ""; // Clear the existing content
 
+                const viewScheduleText = document.createElement('div');
+                viewScheduleText.className = 'view-schedule-box'; // Apply the blue box styling
+                viewScheduleText.textContent = 'View Schedule';
+
+                const scheduleBox = document.createElement('div');
+                scheduleBox.className = 'schedule-box';
+                scheduleBox.style.display = 'none'; // Initially hidden
+
                 if (updatedSchedules && Object.keys(updatedSchedules).length > 0) {
                     const scheduleList = document.createElement('ul');
                     const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -200,11 +247,21 @@ document.addEventListener('click', function(event) {
                         }
                     });
                     
-                    schedulesCell.appendChild(scheduleList);
+                    scheduleBox.appendChild(scheduleList);
+                } else {
+                    scheduleBox.textContent = 'No scheduling periods selected';
                 }
-                else {
-                    schedulesCell.textContent = 'No scheduling periods selected';
-                }
+
+                // Add hover events to show and hide the schedule box
+                viewScheduleText.addEventListener('mouseover', () => {
+                    scheduleBox.style.display = 'block';
+                });
+                viewScheduleText.addEventListener('mouseout', () => {
+                    scheduleBox.style.display = 'none';
+                });
+
+                schedulesCell.appendChild(viewScheduleText);
+                schedulesCell.appendChild(scheduleBox);
             }
         });
     }

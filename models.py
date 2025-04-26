@@ -110,7 +110,7 @@ class User(db.Model):
             "program": self.program,
             "is_active": self.is_active,
             "expiration_time": self.expiration_time.strftime('%Y-%m-%d') if self.expiration_time else None,
-           # "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
+            "schedules": self.schedules or {},  # Ensure schedules is always a dictionary
             "archived_date": self.archived_date.isoformat() if self.archived_date else None,  # Include archived_date
             "code_generated_time": self.code_generated_time.strftime('%Y-%m-%d %H:%M:%S') if self.code_generated_time else None,
             "random_code": self.random_code,

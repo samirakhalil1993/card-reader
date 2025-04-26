@@ -7,6 +7,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="{{ url_for('static', filename='backend.js') }}" defer></script>
+  <style>
+/* Styling for the Schedule column */
+.review-users-box th:nth-child(7), /* Assuming the Schedule column is the 7th column */
+.review-users-box td:nth-child(7) {
+    text-align: center; /* Center the text */
+    padding: 12px; /* Add padding for spacing */
+    border: 1px solid #ddd; /* Add a light border around each cell */
+    word-wrap: break-word; /* Ensure long text wraps inside the cell */
+}
+</style>
 </head>
 
 <body>
@@ -58,9 +68,10 @@
                   <th>Email</th>
                   <th>User ID</th>
                   <th>Program</th>
-                  <th>Status</th> <!-- Add Status column header -->
-                  <th class="expiration-time-header">Expiration Time</th> <!-- Add Expiration Time column header -->
-                  <th>Random Code</th> <!-- Updated column for actions -->
+                  <th>Status</th>
+                  <th>Expiration Time</th>
+                  <th>Schedule</th> <!-- Schedule column -->
+                  <th>Actions</th>
               </tr>
           </thead>
           <tbody>
@@ -77,8 +88,22 @@
                           Archived: {{ user.archived_date.strftime('%Y-%m-%d') if user.archived_date else '' }}
                       {% endif %}
                   </td>
-                  <td class="expiration-time-data">{{ user.expiration_time if user.is_active else '' }}</td> <!-- Conditionally render expiration time -->
+                  <td>{{ user.expiration_time if user.is_active else '' }}</td>
                   <td>
+                    <button class="toggle-schedule-btn" onclick="toggleSchedule(this)">View Schedule</button>
+                    <div class="schedule-box" style="display: none;">
+                        {% if user.schedules and user.schedules|length > 0 %}
+                        <ul>
+                            {% for day, periods in user.schedules.items() %}
+                            <li><strong>{{ day }}:</strong> {{ periods | join(', ') }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        No scheduling periods selected
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
                     <button class="generate-code-btn" data-userid="{{ user.user_id }}">Generate Code</button>
                 </td>
               </tr>

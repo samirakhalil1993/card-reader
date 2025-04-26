@@ -230,8 +230,8 @@ td {
   word-wrap: break-word; /* Ensure long text wraps inside the cell */
 }
 
-/* Styling for the Expiration Time column */
-.review-users-box th:nth-child(6),
+/* Styling for the Schedule column */
+.review-users-box th:nth-child(6), /* Assuming the Schedule column is the 6th column */
 .review-users-box td:nth-child(6) {
     text-align: center; /* Center the text */
     padding: 12px; /* Add padding for spacing */
@@ -241,7 +241,12 @@ td {
 
 /* Alternating row colors for better readability */
 .review-users-box tr:nth-child(even) {
-  background-color: #f9f9f9; /* Light gray background for even rows */
+    background-color: #f9f9f9; /* Light gray background for even rows */
+}
+
+/* Hover effect for rows */
+#usersTable tbody tr:hover {
+    background-color: #e9ecef; /* Softer hover color */
 }
 
 /* Box Container *************************************************************************************************************/
@@ -626,3 +631,42 @@ button.delete-button:hover {
   font-size: 14px;
   color: #333;
 }
+
+/* Styling for the "View Schedule" blue box */
+.view-schedule-box {
+  display: inline-block;
+  background-color: #007bff; /* Blue background */
+  color: white; /* White text */
+  padding: 5px 10px; /* Add padding for spacing */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  text-align: center; /* Center the text */
+  font-size: 14px; /* Adjust font size */
+  font-weight: bold; /* Make the text bold */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.view-schedule-box:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+/* Styling for the schedule box */
+.schedule-box {
+    background-color: #f9f9f9;
+    border: 2px solid #007bff; /* Blue border for the box */
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
+    max-height: 200px;
+    overflow-y: auto; /* Add scroll if content exceeds max height */
+    position: absolute; /* Position the box relative to the text */
+    z-index: 1000; /* Ensure it appears above other elements */
+    display: none; /* Initially hidden */
+}
+
+
+.view-schedule-text:hover {
+    color: #0056b3;
+}
+
