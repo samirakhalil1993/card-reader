@@ -198,24 +198,20 @@ def review_users():
     name = request.args.get('name')
     user_id = request.args.get('user_id')
     is_active = request.args.get('is_active', type=int)
-    is_super_user = request.args.get('is_super_user', type=bool)  # New filter for super users
+    is_super_user = request.args.get('is_super_user', type=bool)
+
     query = User.query
+
     if name:
         query = query.filter(User.name.ilike(f"%{name}%"))
     if user_id:
-        all_users = User.query.all()
-        query = [u for u in all_users if u.user_id == user_id]
+        query = query.filter(User.user_id == user_id)
     if is_active is not None:
         query = query.filter(User.is_active == bool(is_active))
-        if is_active == 1:  # Exclude super users from active users
-            query = query.filter(User.is_super_user == False)
-    if is_super_user:  # Filter for super users
+    if is_super_user:
         query = query.filter(User.is_super_user == True)
-    users = query if isinstance(query, list) else query.all()
 
-    # Dynamically calculate and save temporary_status and status2 for each user
-    for user in users:
-        user.save_status()  # Recalculate and save status2 and temporary_status
+    users = query.all()
 
     return jsonify([user.to_dict() for user in users])
 
