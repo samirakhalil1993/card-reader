@@ -60,7 +60,7 @@
     <button id="showUserLogins" class="filter-button">UserLogins</button>
   </div>
 
-  <!-- Review Users Section -->
+  <!-- Users Table -->
   <div class="review-users-box">
     <table id="usersTable">
         <thead>
@@ -113,34 +113,24 @@
     </table>
   </div>
 
-  <!-- UserLogins Section -->
+  <!-- UserLogins Table -->
   <div id="UserLoginsContainer" class="review-users-box" style="display: none;">
     <h2 style="margin-bottom: 20px;">Login & Logout History</h2>
     <table id="UserLogins">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>User ID</th>
-          <th>Name</th>
-          <th>Timestamp</th>
-          <th>Status</th>
-          <th>Method</th>
-          <th>Message</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for log in UserLogins %}
-        <tr>
-            <td>{{ log.id }}</td>
-            <td>{{ log.user_id }}</td>
-            <td>{{ log.name }}</td>
-            <td>{{ log.timestamp }}</td>
-            <td>{{ log.status }}</td>
-            <td>{{ log.method }}</td>
-            <td>{{ log.message }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>    
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Timestamp</th>
+                <th>Status</th>
+                <th>Method</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Login/logout history will be dynamically inserted here -->
+        </tbody>
     </table>
   </div>
 </div>

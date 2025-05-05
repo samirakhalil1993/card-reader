@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from sqlalchemy.dialects.postgresql import JSON
 
 #  Load environment variables from .env
 #load_dotenv()
@@ -23,48 +24,22 @@ db = SQLAlchemy()
 
 # Define the User model (table: users)
 class User(db.Model):
-    __tablename__ = "users"  # Explicitly set the table name
+    __tablename__ = 'users'
 
-    # Primary key: Auto-incremented integer ID
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    # Name: Required field, max 100 characters
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-
-    # Email: Must be unique and not null, max 100 characters
-    email = db.Column(db.String(100), unique=True, nullable=False, index=True)
-
-    #  FIX: Use LargeBinary for encrypted data storage
-    #_user_id = db.Column("user_id", db.LargeBinary, unique=True, nullable=False, index=True)
-    user_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
-    
-    # Program: Stores the BTH program the user is enrolled in
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    user_id = db.Column(db.String(10), unique=True, nullable=False)
     program = db.Column(db.String(100), nullable=True)
-
-    # New column to indicate active status
     is_active = db.Column(db.Boolean, default=True)
-
-    # Ensure expiration_time is defined as DateTime
-    expiration_time = db.Column(db.Date, nullable=True)  # Use db.Date for date-only storage
-    # Add a JSON column to store schedules
-    schedules = db.Column(db.JSON, nullable=True, default=dict)  # Default to an empty dictionary
-
-    # New column to store the date when the user was archived
+    expiration_time = db.Column(db.Date, nullable=True)
+    schedules = db.Column(JSON, nullable=True)  # JSON column for schedules
     archived_date = db.Column(db.DateTime, nullable=True)
-
-    # Temporary status column with a default value
-    temporary_status = db.Column(db.String(50), nullable=False, default="Unknown")  # Default value is "Unknown"
-
-    # Rename column to status2
-    status2 = db.Column(db.String(100), nullable=True, default="N/A")  # Default value is "N/A"
-
-    #code_generated_time = db.Column(db.DateTime, nullable=True)
+    temporary_status = db.Column(db.String(50), nullable=True)
+    status2 = db.Column(db.String(50), nullable=True)
     code_generated_time = db.Column(db.DateTime, nullable=True)
-
-    random_code = db.Column(db.String(20), nullable=True)
-
-    # New column to indicate if the user is a super user
-    is_super_user = db.Column(db.Boolean, default=False)  # Default to False
+    random_code = db.Column(db.String(10), nullable=True)
+    is_super_user = db.Column(db.Boolean, default=False)
 
     def calculate_status(self):
         """Calculate the user's temporary status and update status2."""
