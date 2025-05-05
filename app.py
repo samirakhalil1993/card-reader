@@ -84,10 +84,12 @@ def update_code_timestamp():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     error = None
+    usernames = 'admin'
+    passwords = 'password'
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username == 'admin' and password == 'password':
+        if username == usernames and password == passwords:
             return redirect(url_for('admin_interface'))
         else:
             error = "Invalid credentials. Please try again."
