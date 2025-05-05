@@ -117,24 +117,6 @@ class User(db.Model):
             "is_super_user": self.is_super_user,  # Include super user status
         }
 
-    # @hybrid_property
-    # def user_id(self):
-    #     """Decrypt the user_id when accessed."""
-    #     if self._user_id:  # Ensure _user_id is not None
-    #         try:
-    #             decrypted_user_id = cipher_suite.decrypt(self._user_id).decode()
-    #             return decrypted_user_id
-    #         except Exception as e:
-    #             return None
-    #     return None  # Return None if _user_id is empty
-
-    # @user_id.setter
-    # def user_id(self, value):
-    #     """Encrypt and store the user_id."""
-    #     value = value.strip().replace("-", "")  # Normalize format
-    #     encrypted_user_id = cipher_suite.encrypt(value.encode())  # Encrypt as bytes
-    #     self._user_id = encrypted_user_id  # Store encrypted data as bytes
-
 class UserLogins(db.Model):
     __tablename__ = 'UserLogins'
 

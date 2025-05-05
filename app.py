@@ -279,7 +279,7 @@ def get_user_logins():
         UserLogins.status,
         UserLogins.method,
         UserLogins.message,
-    ).join(User, UserLogins.user_id == User.user_id).order_by(UserLogins.timestamp.desc()).all()
+    ).outerjoin(User, UserLogins.user_id == User.user_id).order_by(UserLogins.timestamp.desc()).all()
 
     return jsonify([
         {
