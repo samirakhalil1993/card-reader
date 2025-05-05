@@ -588,43 +588,60 @@ document.addEventListener('click', function(event) {
         }
     }
 
-    // Add event listeners for filter buttons
+    // Function to handle button activation
+    function activateButton(button) {
+        // Remove the 'active' class from all filter buttons
+        document.querySelectorAll(".filter-button").forEach(btn => btn.classList.remove("active"));
+
+        // Add the 'active' class to the clicked button
+        button.classList.add("active");
+    }
+
+    // Add event listener for the Active Users button
     showActiveUsersButton.addEventListener("click", function () {
-        if (currentFilter === 1) {
-            currentFilter = null; // Reset filter
-            showActiveUsersButton.classList.remove("active");
-        } else {
-            currentFilter = 1; // Set filter to active users
-            showActiveUsersButton.classList.add("active");
-            showArchivedUsersButton.classList.remove("active");
-        }
-        fetchUsers(searchInput.value, currentFilter);
+        activateButton(this); // Set this button as active
+
+        currentFilter = currentFilter === 1 ? null : 1; // Toggle filter
+        fetchUsers(searchInput.value, currentFilter); // Fetch active users
+
+        // Show the users table and hide the UserLogins table
+        document.getElementById("UserLoginsContainer").style.display = "none";
+        document.querySelector(".review-users-box").style.display = "block";
     });
 
+    // Add event listener for the Archived Users button
     showArchivedUsersButton.addEventListener("click", function () {
-        if (currentFilter === 0) {
-            currentFilter = null; // Reset filter
-            showArchivedUsersButton.classList.remove("active");
-        } else {
-            currentFilter = 0; // Set filter to archived users
-            showArchivedUsersButton.classList.add("active");
-            showActiveUsersButton.classList.remove("active");
-        }
-        fetchUsers(searchInput.value, currentFilter);
+        activateButton(this); // Set this button as active
+
+        currentFilter = currentFilter === 0 ? null : 0; // Toggle filter
+        fetchUsers(searchInput.value, currentFilter); // Fetch archived users
+
+        // Show the users table and hide the UserLogins table
+        document.getElementById("UserLoginsContainer").style.display = "none";
+        document.querySelector(".review-users-box").style.display = "block";
     });
 
     // Add event listener for the Super Users button
     showSuperUsersButton.addEventListener("click", function () {
-        if (currentFilter === "super_users") {
-            currentFilter = null; // Reset filter
-            showSuperUsersButton.classList.remove("active");
-        } else {
-            currentFilter = "super_users"; // Set filter to super users
-            showSuperUsersButton.classList.add("active");
-            showActiveUsersButton.classList.remove("active");
-            showArchivedUsersButton.classList.remove("active");
-        }
+        activateButton(this); // Set this button as active
+
+        currentFilter = currentFilter === "super_users" ? null : "super_users"; // Toggle filter
         fetchSuperUsers(); // Fetch super users
+
+        // Show the users table and hide the UserLogins table
+        document.getElementById("UserLoginsContainer").style.display = "none";
+        document.querySelector(".review-users-box").style.display = "block";
+    });
+
+    // Add event listener for the UserLogins button
+    showUserLoginsButton.addEventListener("click", function () {
+        activateButton(this); // Set this button as active
+
+        fetchUserLogins(); // Fetch user logins
+
+        // Show the UserLogins table and hide the users table
+        document.querySelector(".review-users-box").style.display = "none";
+        document.getElementById("UserLoginsContainer").style.display = "block";
     });
 
     // Function to fetch super users
@@ -709,21 +726,32 @@ document.addEventListener('click', function(event) {
             .then(schedule => {
                 scheduleTableBody.innerHTML = ""; // Clear the table body
                 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-                const periods = ["08:00 - 12:00", "12:00 - 16:00", "16:00 - 20:00", "20:00 - 23:00"];
+                const periods = ["08:00-10:00", "10:00-12:00", "12:00-14:00", "14:00-16:00", "16:00-18:00"];
 
                 days.forEach(day => {
-                    const row = scheduleTableBody.insertRow();
-                    const dayCell = row.insertCell(0);
+                    const row = document.createElement('tr');
+                    const dayCell = document.createElement('td');
                     dayCell.textContent = day;
+                    row.appendChild(dayCell);
 
                     periods.forEach(period => {
-                        const cell = row.insertCell();
-                        const isSelected = schedule[day]?.includes(period); // Check if the period is selected
-                        cell.innerHTML = `<input type="checkbox" ${isSelected ? "checked" : ""} data-day="${day}" data-period="${period}">`;
-                    });
-                });
+                        const cell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.setAttribute('data-day', day);
+                        checkbox.setAttribute('data-period', period);
 
-                scheduleModal.style.display = "block"; // Show the modal
+                        // Check the box if the user is a superuser or the period is in the schedule
+                        if (schedule.is_super_user || (schedule[day] && schedule[day].includes(period))) {
+                            checkbox.checked = true;
+                        }
+
+                        cell.appendChild(checkbox);
+                        row.appendChild(cell);
+                    });
+
+                    scheduleTableBody.appendChild(row);
+                });
             })
             .catch(error => console.error("Error fetching schedule:", error));
     }
@@ -778,28 +806,67 @@ document.addEventListener('click', function(event) {
     });
 
     showUserLoginsButton.addEventListener("click", function () {
+        console.log("UserLogins button clicked");
+        fetchUserLogins();
+    });
 
-        const isVisible = UserLoginsContainer.style.display === "block";
-        UserLoginsContainer.style.display = isVisible ? "none" : "block";
+    function fetchUserLogins() {
+        console.log("Fetching user logins...");
+        fetch('/UserLogins')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("User logins fetched:", data);
 
-        if (!isVisible) {
-            fetch('/UserLogins')
-                .then(res => res.json())
-                .then(data => {
-                    UserLoginsBody.innerHTML = ""; // Clear old logs
+                // Hide the users table and show the UserLogins table
+                document.querySelector(".review-users-box").style.display = "none";
+                document.getElementById("UserLoginsContainer").style.display = "block";
+
+                const loginsTableBody = document.getElementById("UserLogins").querySelector("tbody");
+                loginsTableBody.innerHTML = ""; // Clear the table body
+
+                if (data.length > 0) {
                     data.forEach(log => {
-                        const row = UserLoginsBody.insertRow();
-                        row.insertCell(0).textContent = log.id; // ID
-                        row.insertCell(1).textContent = log.user_id; // User ID
-                        row.insertCell(2).textContent = log.name || "Unknown"; // Name
-                        row.insertCell(3).textContent = log.timestamp; // Timestamp
-                        row.insertCell(4).textContent = log.status; // Status
-                        row.insertCell(5).textContent = log.method; // Method
-                        row.insertCell(6).textContent = log.message || ""; // Message
+                        const row = loginsTableBody.insertRow();
+                        row.insertCell(0).textContent = log.id;
+                        row.insertCell(1).textContent = log.user_id;
+                        row.insertCell(2).textContent = log.name || "N/A";
+                        row.insertCell(3).textContent = log.timestamp;
+                        row.insertCell(4).textContent = log.status;
+                        row.insertCell(5).textContent = log.method;
+                        row.insertCell(6).textContent = log.message;
                     });
-                })
-                .catch(err => console.error("Error fetching logs:", err));
+                } else {
+                    loginsTableBody.innerHTML = '<tr><td colspan="7">No login/logout history found</td></tr>';
+                }
+            })
+            .catch(error => console.error('Error fetching user logins:', error));
+    }
+
+    document.getElementById("userLoginsButton").addEventListener("click", function () {
+        fetchUserLogins();
+    });
+
+    function toggleTableVisibility(showLogins) {
+        const usersTable = document.querySelector(".review-users-box");
+        const userLoginsTable = document.getElementById("UserLoginsContainer");
+
+        if (showLogins) {
+            usersTable.style.display = "none";
+            userLoginsTable.style.display = "block";
+        } else {
+            usersTable.style.display = "block";
+            userLoginsTable.style.display = "none";
         }
+    }
+
+    // Example usage when clicking the "UserLogins" button
+    document.getElementById("showUserLogins").addEventListener("click", function () {
+        toggleTableVisibility(true);
     });
 });
 

@@ -213,6 +213,14 @@ def review_users():
 
     users = query.all()
 
+    # Automatically assign all periods to superusers
+    all_periods = ["08:00-10:00", "10:00-12:00", "12:00-14:00", "14:00-16:00", "16:00-18:00"]
+    all_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+    for user in users:
+        if user.is_super_user:
+            user.schedules = {day: all_periods for day in all_days}
+
     return jsonify([user.to_dict() for user in users])
 
 @app.route('/update_user_schedule/<user_id>', methods=['POST'])
