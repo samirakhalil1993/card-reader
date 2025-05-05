@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const updateScheduleTableBody = document.getElementById("updateScheduleTable").getElementsByTagName("tbody")[0];
 
     const showSuperUsersButton = document.getElementById("showSuperUsers"); // Get the Super Users button
+    const showUserLoginsButton = document.getElementById("showUserLogins");
+    const UserLoginsContainer = document.getElementById("UserLoginsContainer");
+    const UserLoginsBody = document.querySelector("#UserLogins tbody");
 
     let currentFilter = null; // Track the current filter state
     let currentUserId = null; // Track the current user ID for schedule management
@@ -771,6 +774,31 @@ document.addEventListener('click', function(event) {
         if (row) {
             const userId = row.cells[2].textContent; // Assuming the User ID is in the 3rd column
             fetchUserSchedule(userId);
+        }
+    });
+
+    showUserLoginsButton.addEventListener("click", function () {
+
+        const isVisible = UserLoginsContainer.style.display === "block";
+        UserLoginsContainer.style.display = isVisible ? "none" : "block";
+
+        if (!isVisible) {
+            fetch('/UserLogins')
+                .then(res => res.json())
+                .then(data => {
+                    UserLoginsBody.innerHTML = ""; // Clear old logs
+                    data.forEach(log => {
+                        const row = UserLoginsBody.insertRow();
+                        row.insertCell(0).textContent = log.id; // ID
+                        row.insertCell(1).textContent = log.user_id; // User ID
+                        row.insertCell(2).textContent = log.name || "Unknown"; // Name
+                        row.insertCell(3).textContent = log.timestamp; // Timestamp
+                        row.insertCell(4).textContent = log.status; // Status
+                        row.insertCell(5).textContent = log.method; // Method
+                        row.insertCell(6).textContent = log.message || ""; // Message
+                    });
+                })
+                .catch(err => console.error("Error fetching logs:", err));
         }
     });
 });

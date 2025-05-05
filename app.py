@@ -2,7 +2,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
-from models import db, User #, cipher_suite
+from models import db, User, UserLogins
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from dotenv import load_dotenv
@@ -268,6 +268,31 @@ def update_user():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+@app.route('/UserLogins', methods=['GET'])
+def get_user_logins():
+    logs = db.session.query(
+        UserLogins.id,
+        UserLogins.user_id,
+        User.name.label('name'),  # Fetch the name from the users table
+        UserLogins.timestamp,
+        UserLogins.status,
+        UserLogins.method,
+        UserLogins.message,
+    ).join(User, UserLogins.user_id == User.user_id).order_by(UserLogins.timestamp.desc()).all()
+
+    return jsonify([
+        {
+            "id": log.id,
+            "user_id": log.user_id,
+            "name": log.name,  # Use the name from the users table
+            "timestamp": log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else "N/A",
+            "status": log.status,
+            "method": log.method,
+            "message": log.message
+        }
+        for log in logs
+    ])
 
 if __name__ == '__main__':
     app.run(debug=True)

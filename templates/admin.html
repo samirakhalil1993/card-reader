@@ -56,40 +56,41 @@
   <div class="filter-buttons">
     <button id="showActiveUsers" class="filter-button">Active Users</button>
     <button id="showArchivedUsers" class="filter-button">Archived Users</button>
-    <button id="showSuperUsers" class="filter-button">Super Users</button> <!-- New button for super users -->
+    <button id="showSuperUsers" class="filter-button">Super Users</button>
+    <button id="showUserLogins" class="filter-button">UserLogins</button>
   </div>
 
   <!-- Review Users Section -->
   <div class="review-users-box">
-      <table id="usersTable">
-          <thead>
-              <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>User ID</th>
-                  <th>Program</th>
-                  <th>Status</th>
-                  <th>Expiration Time</th>
-                  <th>Schedule</th> <!-- Schedule column -->
-                  <th>Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for user in users %}
-              <tr>
-                  <td>{{ user.name }}</td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.user_id }}</td>
-                  <td>{{ user.program }}</td>
-                  <td>
-                      {% if user.is_active %}
-                          Has Access
-                      {% else %}
-                          Archived: {{ user.archived_date.strftime('%Y-%m-%d') if user.archived_date else '' }}
-                      {% endif %}
-                  </td>
-                  <td>{{ user.expiration_time if user.is_active else '' }}</td>
-                  <td>
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>User ID</th>
+                <th>Program</th>
+                <th>Status</th>
+                <th>Expiration Time</th>
+                <th>Schedule</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.program }}</td>
+                <td>
+                    {% if user.is_active %}
+                        Has Access
+                    {% else %}
+                        Archived: {{ user.archived_date.strftime('%Y-%m-%d') if user.archived_date else '' }}
+                    {% endif %}
+                </td>
+                <td>{{ user.expiration_time if user.is_active else '' }}</td>
+                <td>
                     <button class="toggle-schedule-btn" onclick="toggleSchedule(this)">View Schedule</button>
                     <div class="schedule-box" style="display: none;">
                         {% if user.schedules and user.schedules|length > 0 %}
@@ -106,10 +107,41 @@
                 <td>
                     <button class="generate-code-btn" data-userid="{{ user.user_id }}">Generate Code</button>
                 </td>
-              </tr>
-              {% endfor %}
-          </tbody>
-      </table>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+  <!-- UserLogins Section -->
+  <div id="UserLoginsContainer" class="review-users-box" style="display: none;">
+    <h2 style="margin-bottom: 20px;">Login & Logout History</h2>
+    <table id="UserLogins">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Timestamp</th>
+          <th>Status</th>
+          <th>Method</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in UserLogins %}
+        <tr>
+            <td>{{ log.id }}</td>
+            <td>{{ log.user_id }}</td>
+            <td>{{ log.name }}</td>
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.status }}</td>
+            <td>{{ log.method }}</td>
+            <td>{{ log.message }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>    
+    </table>
   </div>
 </div>
 

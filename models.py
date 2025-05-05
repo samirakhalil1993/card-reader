@@ -134,3 +134,17 @@ class User(db.Model):
     #     value = value.strip().replace("-", "")  # Normalize format
     #     encrypted_user_id = cipher_suite.encrypt(value.encode())  # Encrypt as bytes
     #     self._user_id = encrypted_user_id  # Store encrypted data as bytes
+
+class UserLogins(db.Model):
+    __tablename__ = 'UserLogins'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String, nullable=True)  # Ensure the name column is defined
+    timestamp = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String, nullable=False)
+    method = db.Column(db.String, nullable=False)
+    message = db.Column(db.String, nullable=True)
+
+    def __repr__(self):
+        return f"<UserLogins {self.user_id} - {self.status} at {self.timestamp}>"
