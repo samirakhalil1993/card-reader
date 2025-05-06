@@ -284,7 +284,7 @@ def get_user_logins():
     logs = db.session.query(
         UserLogins.id,
         UserLogins.user_id,
-        User.name.label('name'),  # Fetch the name from the users table
+        UserLogins.name,
         UserLogins.timestamp,
         UserLogins.status,
         UserLogins.method,
@@ -295,7 +295,7 @@ def get_user_logins():
         {
             "id": log.id,
             "user_id": log.user_id,
-            "name": log.name,  # Use the name from the users table
+            "name": log.name if log.name else "Unknown",  # Default to "Unknown" if no match
             "timestamp": log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else "N/A",
             "status": log.status,
             "method": log.method,
