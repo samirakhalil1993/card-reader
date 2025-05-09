@@ -274,10 +274,16 @@ document.addEventListener('click', function(event) {
     // Fetch all users when the page loads
     fetchUsers();
 
-    // Handle search input event
     searchInput.addEventListener("input", function (event) {
         const searchTerm = searchInput.value;
-        fetchUsers(searchTerm, currentFilter);
+    
+        if (currentFilter === "user_logins") {
+            // Fetch user logins when the UserLogins section is active
+            fetchUserLogins(currentPage, searchTerm);
+        } else {
+            // Fetch users for other filters (e.g., active, archived, super users)
+            fetchUsers(searchTerm, currentFilter);
+        }
     });
 
     addUserForm.addEventListener("submit", async function (event) {
@@ -626,6 +632,7 @@ document.addEventListener('click', function(event) {
     // Add event listener for the UserLogins button
     showUserLoginsButton.addEventListener("click", function () {
         activateButton(this); // Set this button as active
+        currentFilter = "user_logins"; // Set filter for user logins
         fetchUserLogins(); // Fetch user logins
         toggleTableVisibility(true); // Show the UserLogins table
     });
@@ -792,7 +799,6 @@ document.addEventListener('click', function(event) {
     });
 
     function fetchUserLogins(page = 1, searchQuery = '') {
-        console.log("Fetching user logins for page:", page, "with search query:", searchQuery);
         fetch(`/UserLogins?page=${page}&per_page=${perPage}&search=${encodeURIComponent(searchQuery)}`)
             .then(response => {
                 if (!response.ok) {
@@ -801,12 +807,6 @@ document.addEventListener('click', function(event) {
                 return response.json();
             })
             .then(data => {
-                console.log("User logins fetched:", data);
-
-                // Update the current page
-                currentPage = data.current_page;
-
-                // Update the table
                 UserLoginsBody.innerHTML = ""; // Clear the table body
 
                 if (data.logs.length > 0) {
@@ -834,14 +834,12 @@ document.addEventListener('click', function(event) {
 
     document.getElementById("prevPage").addEventListener("click", function () {
         if (currentPage > 1) {
-            console.log("Previous button clicked, fetching page:", currentPage - 1);
             fetchUserLogins(currentPage - 1); // Fetch the previous page
         }
     });
 
     document.getElementById("nextPage").addEventListener("click", function () {
-        console.log("Next button clicked, fetching page:", currentPage + 1);
-            fetchUserLogins(currentPage + 1); // Fetch the next page
+        fetchUserLogins(currentPage + 1); // Fetch the next page
     });
 
     function toggleTableVisibility(showLogins) {

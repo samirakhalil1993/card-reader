@@ -119,31 +119,62 @@ body {
 }
 
 /* Filter Buttons Styling *********************************************************************************************/
+/* Styling for the search and filter container */
+.search-and-filter-container {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center elements horizontally */
+  gap: 10px; /* Add spacing between the search box and filter buttons */
+  margin-bottom: 20px; /* Add space below the container */
+  width: 100%; /* Ensure it spans the full width */
+}
+
+/* Filter Buttons Styling */
 .filter-buttons {
-  text-align: left;
-  margin: 20px 16%; /* Centers the box horizontally */
+  display: flex; /* Enable flexbox for the buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
+  justify-content: center; /* Center the buttons horizontally */
+  gap: 10px; /* Add spacing between buttons */
+  width: 100%; /* Ensure buttons take up full width */
 }
 
+/* Individual filter button styling */
 .filter-button {
-    background-color: #007bff; /* Default blue color */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-right: 5px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+  background-color: #007bff; /* Default blue color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  flex: 1; /* Allow buttons to grow and fill available space */
+  max-width: 200px; /* Set a maximum width for buttons */
+  text-align: center; /* Center text inside buttons */
 }
 
+/* Hover effect for filter buttons */
 .filter-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
+/* Active filter button styling */
 .filter-button.active {
-    background-color: #0056b3; /* Darker blue for active state */
-    color: white;
+  background-color: #0056b3; /* Darker blue for active state */
+  color: white;
 }
 
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .filter-buttons {
+    flex-direction: column; /* Stack buttons vertically on smaller screens */
+    align-items: center; /* Center buttons horizontally */
+  }
+
+  .filter-button {
+    width: 100%; /* Make buttons take up full width */
+    max-width: none; /* Remove max-width restriction */
+  }
+}
 /* Styling for the review users box (container for the table) *******************************************************/
 .review-users-box {
   background-color: #ffffff;
