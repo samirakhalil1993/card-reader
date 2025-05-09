@@ -281,7 +281,11 @@ def update_user():
 
 @app.route('/UserLogins', methods=['GET'])
 def get_user_logins():
-    logs = db.session.query(
+    page = request.args.get('page', 1, type=int)  # Get the current page, default to 1
+    per_page = request.args.get('per_page', 10, type=int)  # Get the number of items per page, default to 10
+    search_query = request.args.get('search', '').strip()  # Get the search query, default to an empty string
+
+    logs_query = db.session.query(
         UserLogins.id,
         UserLogins.user_id,
         UserLogins.name,
@@ -289,20 +293,37 @@ def get_user_logins():
         UserLogins.status,
         UserLogins.method,
         UserLogins.message,
-    ).outerjoin(User, UserLogins.user_id == User.user_id).order_by(UserLogins.timestamp.desc()).all()
+    ).outerjoin(User, UserLogins.user_id == User.user_id)
 
-    return jsonify([
-        {
-            "id": log.id,
-            "user_id": log.user_id,
-            "name": log.name if log.name else "Unknown",  # Default to "Unknown" if no match
-            "timestamp": log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else "N/A",
-            "status": log.status,
-            "method": log.method,
-            "message": log.message
-        }
-        for log in logs
-    ])
+    # Apply search filter if a search query is provided
+    if search_query:
+        logs_query = logs_query.filter(
+            UserLogins.user_id.ilike(f"%{search_query}%") |  # Search by user ID
+            UserLogins.name.ilike(f"%{search_query}%") |    # Search by name
+            UserLogins.message.ilike(f"%{search_query}%")   # Search by message
+        )
+
+    # Apply pagination
+    paginated_logs = logs_query.order_by(UserLogins.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "logs": [
+            {
+                "id": log.id,
+                "user_id": log.user_id,
+                "name": log.name if log.name else "Unknown",  # Default to "Unknown" if no match
+                "timestamp": log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else "N/A",
+                "status": log.status,
+                "method": log.method,
+                "message": log.message
+            }
+            for log in paginated_logs.items
+        ],
+        "total": paginated_logs.total,  # Total number of logs
+        "pages": paginated_logs.pages,  # Total number of pages
+        "current_page": paginated_logs.page,  # Current page
+        "per_page": paginated_logs.per_page  # Items per page
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

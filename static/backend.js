@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentFilter = null; // Track the current filter state
     let currentUserId = null; // Track the current user ID for schedule management
+    let currentPage = 1; // Track the current page
+    const perPage = 7; // Number of items per page
 
     // Show the add user form when clicking the Add User box
     document.getElementById('addUserBox').addEventListener('click', function () {
@@ -600,48 +602,32 @@ document.addEventListener('click', function(event) {
     // Add event listener for the Active Users button
     showActiveUsersButton.addEventListener("click", function () {
         activateButton(this); // Set this button as active
-
-        currentFilter = currentFilter === 1 ? null : 1; // Toggle filter
+        currentFilter = 1; // Set filter for active users
         fetchUsers(searchInput.value, currentFilter); // Fetch active users
-
-        // Show the users table and hide the UserLogins table
-        document.getElementById("UserLoginsContainer").style.display = "none";
-        document.querySelector(".review-users-box").style.display = "block";
+        toggleTableVisibility(false); // Show the users table
     });
 
     // Add event listener for the Archived Users button
     showArchivedUsersButton.addEventListener("click", function () {
         activateButton(this); // Set this button as active
-
-        currentFilter = currentFilter === 0 ? null : 0; // Toggle filter
+        currentFilter = 0; // Set filter for archived users
         fetchUsers(searchInput.value, currentFilter); // Fetch archived users
-
-        // Show the users table and hide the UserLogins table
-        document.getElementById("UserLoginsContainer").style.display = "none";
-        document.querySelector(".review-users-box").style.display = "block";
+        toggleTableVisibility(false); // Show the users table
     });
 
     // Add event listener for the Super Users button
     showSuperUsersButton.addEventListener("click", function () {
         activateButton(this); // Set this button as active
-
-        currentFilter = currentFilter === "super_users" ? null : "super_users"; // Toggle filter
+        currentFilter = "super_users"; // Set filter for super users
         fetchSuperUsers(); // Fetch super users
-
-        // Show the users table and hide the UserLogins table
-        document.getElementById("UserLoginsContainer").style.display = "none";
-        document.querySelector(".review-users-box").style.display = "block";
+        toggleTableVisibility(false); // Show the users table
     });
 
     // Add event listener for the UserLogins button
     showUserLoginsButton.addEventListener("click", function () {
         activateButton(this); // Set this button as active
-
         fetchUserLogins(); // Fetch user logins
-
-        // Show the UserLogins table and hide the users table
-        document.querySelector(".review-users-box").style.display = "none";
-        document.getElementById("UserLoginsContainer").style.display = "block";
+        toggleTableVisibility(true); // Show the UserLogins table
     });
 
     // Function to fetch super users
@@ -805,14 +791,9 @@ document.addEventListener('click', function(event) {
         }
     });
 
-    showUserLoginsButton.addEventListener("click", function () {
-        console.log("UserLogins button clicked");
-        fetchUserLogins();
-    });
-
-    function fetchUserLogins() {
-        console.log("Fetching user logins...");
-        fetch('/UserLogins')
+    function fetchUserLogins(page = 1, searchQuery = '') {
+        console.log("Fetching user logins for page:", page, "with search query:", searchQuery);
+        fetch(`/UserLogins?page=${page}&per_page=${perPage}&search=${encodeURIComponent(searchQuery)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -822,16 +803,15 @@ document.addEventListener('click', function(event) {
             .then(data => {
                 console.log("User logins fetched:", data);
 
-                // Hide the users table and show the UserLogins table
-                document.querySelector(".review-users-box").style.display = "none";
-                document.getElementById("UserLoginsContainer").style.display = "block";
+                // Update the current page
+                currentPage = data.current_page;
 
-                const loginsTableBody = document.getElementById("UserLogins").querySelector("tbody");
-                loginsTableBody.innerHTML = ""; // Clear the table body
+                // Update the table
+                UserLoginsBody.innerHTML = ""; // Clear the table body
 
-                if (data.length > 0) {
-                    data.forEach(log => {
-                        const row = loginsTableBody.insertRow();
+                if (data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        const row = UserLoginsBody.insertRow();
                         row.insertCell(0).textContent = log.id;
                         row.insertCell(1).textContent = log.user_id;
                         row.insertCell(2).textContent = log.name || "N/A";
@@ -841,14 +821,27 @@ document.addEventListener('click', function(event) {
                         row.insertCell(6).textContent = log.message;
                     });
                 } else {
-                    loginsTableBody.innerHTML = '<tr><td colspan="7">No login/logout history found</td></tr>';
+                    UserLoginsBody.innerHTML = '<tr><td colspan="7">No login/logout history found</td></tr>';
                 }
+
+                // Update pagination controls
+                document.getElementById("paginationInfo").textContent = `Page ${data.current_page} of ${data.pages}`;
+                document.getElementById("prevPage").disabled = data.current_page === 1;
+                document.getElementById("nextPage").disabled = data.current_page === data.pages;
             })
             .catch(error => console.error('Error fetching user logins:', error));
     }
 
-    document.getElementById("userLoginsButton").addEventListener("click", function () {
-        fetchUserLogins();
+    document.getElementById("prevPage").addEventListener("click", function () {
+        if (currentPage > 1) {
+            console.log("Previous button clicked, fetching page:", currentPage - 1);
+            fetchUserLogins(currentPage - 1); // Fetch the previous page
+        }
+    });
+
+    document.getElementById("nextPage").addEventListener("click", function () {
+        console.log("Next button clicked, fetching page:", currentPage + 1);
+            fetchUserLogins(currentPage + 1); // Fetch the next page
     });
 
     function toggleTableVisibility(showLogins) {
@@ -864,10 +857,10 @@ document.addEventListener('click', function(event) {
         }
     }
 
-    // Example usage when clicking the "UserLogins" button
     document.getElementById("showUserLogins").addEventListener("click", function () {
         toggleTableVisibility(true);
     });
+
 });
 
 // Populate the schedule table in the "Add User" modal
