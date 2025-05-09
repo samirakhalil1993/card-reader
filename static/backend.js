@@ -799,6 +799,7 @@ document.addEventListener('click', function(event) {
     });
 
     function fetchUserLogins(page = 1, searchQuery = '') {
+        console.log("Fetching user logins for page:", page, "with search query:", searchQuery);
         fetch(`/UserLogins?page=${page}&per_page=${perPage}&search=${encodeURIComponent(searchQuery)}`)
             .then(response => {
                 if (!response.ok) {
@@ -807,6 +808,12 @@ document.addEventListener('click', function(event) {
                 return response.json();
             })
             .then(data => {
+                console.log("User logins fetched:", data);
+
+                // Update the current page
+                currentPage = data.current_page;
+
+                // Update the table
                 UserLoginsBody.innerHTML = ""; // Clear the table body
 
                 if (data.logs.length > 0) {
@@ -834,12 +841,16 @@ document.addEventListener('click', function(event) {
 
     document.getElementById("prevPage").addEventListener("click", function () {
         if (currentPage > 1) {
+            console.log("Previous button clicked, fetching page:", currentPage - 1);
             fetchUserLogins(currentPage - 1); // Fetch the previous page
         }
     });
 
     document.getElementById("nextPage").addEventListener("click", function () {
-        fetchUserLogins(currentPage + 1); // Fetch the next page
+        console.log("Next button clicked, fetching page:", currentPage + 1);
+        console.log("Current page before fetching:", currentPage);
+        fetchUserLogins(currentPage + 1);
+        console.log("Current page after fetching:", currentPage);
     });
 
     function toggleTableVisibility(showLogins) {
