@@ -1,14 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
     const addUserForm = document.getElementById("addUserForm");
     const removeUserForm = document.getElementById("removeUserForm");
+    const adminInfoForm = document.getElementById("adminInfoForm");
     const usersTableBody = document.getElementById("usersTable").getElementsByTagName("tbody")[0];
     const updateModal = document.getElementById("updateUserModal");
     const addUserModal = document.getElementById("addUserModal");
     const removeUserModal = document.getElementById("removeUserModal");
+    const adminInfoModal = document.getElementById("adminInfoModal");
     const updateForm = document.getElementById("updateUserForm");
     const closeButtonUpdate = updateModal.querySelector(".close");
     const closeButtonAdd = addUserModal.querySelector(".close");
     const closeButtonRemove = removeUserModal.querySelector(".close");
+    const closeButtonAdmin = adminInfoModal.querySelector(".close");
     const archiveUserButton = document.getElementById("archiveUserButton");
     const searchForm = document.getElementById("searchForm");
     const searchInput = searchForm.elements["search"];
@@ -41,6 +44,29 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('removeUserBox').addEventListener('click', function () {
         removeUserModal.style.display = 'block'; // Display the modal when clicked
     });
+
+    // Show the admin info form when clicking the Admin Info box
+    document.getElementById('adminInfoBox').addEventListener('click', function () {
+        // Fetch current admin info if it exists
+        populateAdminForm();
+        adminInfoModal.style.display = 'block'; // Display the modal when clicked
+    });
+
+    // Function to populate admin form with existing admin data
+    function populateAdminForm() {
+        // Fetch the current admin user if it exists
+        fetch('/review_users?is_admin=true')
+            .then(response => response.json())
+            .then(admins => {
+                if (admins.length > 0) {
+                    const admin = admins[0];
+                    document.getElementById("adminInfoForm").elements["admin_name"].value = admin.name;
+                    document.getElementById("adminInfoForm").elements["admin_email"].value = admin.email;
+                    document.getElementById("adminInfoForm").elements["admin_id"].value = admin.user_id;
+                }
+            })
+            .catch(error => console.error('Error fetching admin details:', error));
+    }
 
     // Function to validate BTH email
     function validateBthEmail(email) {
@@ -137,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     codeModal.className = 'modal';
     codeModal.innerHTML = `
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close">×</span>
             <h2>Generated Code</h2>
             <div id="generatedCode" style="font-size: 24px; text-align: center; margin: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;"></div>
             <button id="copyCodeBtn">Copy Code</button>
@@ -218,6 +244,9 @@ document.addEventListener('click', function(event) {
         if (event.target == removeUserModal) {
             removeUserModal.style.display = "none";
         }
+        if (event.target == adminInfoModal) {
+            adminInfoModal.style.display = "none";
+        }
         if (event.target == scheduleModal) {
             scheduleModal.style.display = "none";
         }
@@ -296,6 +325,7 @@ document.addEventListener('click', function(event) {
             program: addUserForm.elements["program"].value.trim(),
             schedules: collectAddScheduleData(), // Collect schedule data
             is_super_user: addUserForm.elements["is_super_user"].checked, // Get super user status
+            temporary_status: '' // Default value for temporary_status
         };
 
         // Client-side validation for BTH email
@@ -359,6 +389,56 @@ document.addEventListener('click', function(event) {
         }
     });
 
+    // Handle admin info form submission
+    adminInfoForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        // Show enhanced confirmation dialog
+        const confirmed = confirm(
+            "⚠️ WARNING ⚠️\n\n" +
+            "You are about to add or update the system administrator.\n\n" +
+            "Any existing admin will be COMPLETELY REMOVED from the database.\n\n" +
+            "Are you sure you want to continue?"
+        );
+        
+        if (!confirmed) {
+            return; // Exit if the admin cancels the update
+        }
+
+        const formData = {
+            name: adminInfoForm.elements["admin_name"].value.trim(),
+            email: adminInfoForm.elements["admin_email"].value.trim(),
+            user_id: adminInfoForm.elements["admin_id"].value.trim(),
+            is_admin: true,  // Mark as admin
+            is_super_user: true, // Admin is always a super user
+            schedules: {},  // No schedules for admin
+            temporary_status: "Super User - Always Active", // Non-null value for temporary_status
+            status2: 1 // Set status2 to 1 for admin/superuser
+        };
+
+        try {
+            const response = await fetch("/add_admin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                fetchUsers(); // Refresh the user table
+                adminInfoForm.reset();
+                adminInfoModal.style.display = "none"; // Close the modal
+            } else {
+                alert("Error: " + (result.error || "Something went wrong!"));
+            }
+
+        } catch (error) {
+            alert("Network error: " + error.message);
+        }
+    });
+
     // Close modal when clicking (×) button
     closeButtonUpdate.onclick = function () {
         updateModal.style.display = "none";
@@ -368,6 +448,9 @@ document.addEventListener('click', function(event) {
     }
     closeButtonRemove.onclick = function () {
         removeUserModal.style.display = "none";
+    }
+    closeButtonAdmin.onclick = function () {
+        adminInfoModal.style.display = "none";
     }
 
     // Close modal when clicking outside
@@ -380,6 +463,9 @@ document.addEventListener('click', function(event) {
         }
         if (event.target == removeUserModal) {
             removeUserModal.style.display = "none";
+        }
+        if (event.target == adminInfoModal) {
+            adminInfoModal.style.display = "none";
         }
         if (event.target == scheduleModal) {
             scheduleModal.style.display = "none";
@@ -484,6 +570,7 @@ document.addEventListener('click', function(event) {
             program: document.getElementById("updateProgram").value, // Allow custom program input
             schedules: {}, // Collect updated schedules
             is_super_user: document.getElementById("updateIsSuperUser").checked, // Get super user status
+            temporary_status: '' // Default value for temporary_status
         };
 
         // Collect schedule data from the table

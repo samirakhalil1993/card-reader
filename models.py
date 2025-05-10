@@ -40,6 +40,7 @@ class User(db.Model):
     code_generated_time = db.Column(db.DateTime, nullable=True)
     random_code = db.Column(db.String(10), nullable=True)
     is_super_user = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)  # New column for admin status
 
     def calculate_status(self):
         """Calculate the user's temporary status and update status2."""
@@ -90,6 +91,7 @@ class User(db.Model):
             "code_generated_time": self.code_generated_time.strftime('%Y-%m-%d %H:%M:%S') if self.code_generated_time else None,
             "random_code": self.random_code,
             "is_super_user": self.is_super_user,  # Include super user status
+            "is_admin": self.is_admin  # Include admin status
         }
 
 class UserLogins(db.Model):

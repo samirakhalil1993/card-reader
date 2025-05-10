@@ -148,6 +148,93 @@ def add_user():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
+@app.route('/add_admin', methods=['POST'])
+def add_admin():
+    try:
+        data = request.get_json()
+
+        # Check if required fields are present
+        if 'user_id' not in data or 'email' not in data or 'name' not in data:
+            return jsonify({"error": "Missing required fields: 'user_id', 'email', or 'name'"}), 400
+
+        # Validate User ID Number format (9 or 10 digits)
+        if not validate_user_id(data['user_id']):
+            return jsonify({"error": "Invalid User ID Number format. It must be exactly 9 or 10 digits."}), 400
+
+        # For admin users, we don't validate the email format
+        
+        # First, check if there's an existing admin
+        existing_admin = User.query.filter_by(is_admin=True).first()
+        
+        # If we found an existing admin
+        if existing_admin:
+            # If this is updating the same admin (same user_id), just update their details
+            if existing_admin.user_id == data['user_id']:
+                existing_admin.name = data['name']
+                existing_admin.email = data['email']
+                db.session.commit()
+                return jsonify({
+                    "message": "Admin information updated successfully!"
+                }), 200
+            else:
+                # Delete the existing admin from the database
+                deleted_name = existing_admin.name  # Store name for confirmation message
+                db.session.delete(existing_admin)
+                db.session.commit()
+        
+        # Check if a user with this user_id already exists
+        existing_user = User.query.filter_by(user_id=data['user_id']).first()
+        
+        if existing_user:
+            # Update the existing user to be an admin
+            existing_user.name = data['name']
+            existing_user.email = data['email']
+            existing_user.is_admin = True
+            existing_user.is_super_user = True
+            existing_user.is_active = True
+            existing_user.temporary_status = "Super User - Always Active"  # Set a non-null value here
+            existing_user.status2 = 1  # Set status2 to 1 for superusers
+            
+            # Set expiration date to 10 years from now (admins don't expire)
+            existing_user.expiration_time = (datetime.now(timezone.utc) + timedelta(days=3650)).date()
+            
+            db.session.commit()
+            
+            msg = "User updated to admin status successfully!"
+            if 'deleted_name' in locals():
+                msg = f"Previous admin '{deleted_name}' was removed. {msg}"
+                
+            return jsonify({
+                "message": msg
+            }), 200
+        else:
+            # Create a new user with admin privileges
+            new_admin = User(
+                user_id=data['user_id'],
+                email=data['email'],
+                name=data['name'],
+                program="Administrator",  # Set a default program for admins
+                expiration_time=(datetime.now(timezone.utc) + timedelta(days=3650)).date(),  # 10 years from now
+                schedules={},
+                temporary_status="Super User - Always Active",  # Set a non-null value here
+                status2=1,  # Set status2 to 1 for superusers
+                is_admin=True,
+                is_super_user=True  # Admins are always super users
+            )
+            db.session.add(new_admin)
+            db.session.commit()
+            
+            msg = "Admin added successfully!"
+            if 'deleted_name' in locals():
+                msg = f"Previous admin '{deleted_name}' was removed. {msg}"
+                
+            return jsonify({
+                "message": msg
+            }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 @app.route('/archive_user', methods=['POST'])
 def archive_user():
     try:
@@ -201,6 +288,7 @@ def review_users():
     user_id = request.args.get('user_id')
     is_active = request.args.get('is_active', type=int)
     is_super_user = request.args.get('is_super_user', type=bool)
+    is_admin = request.args.get('is_admin', type=bool)
 
     query = User.query
 
@@ -212,6 +300,8 @@ def review_users():
         query = query.filter(User.is_active == bool(is_active))
     if is_super_user:
         query = query.filter(User.is_super_user == True)
+    if is_admin:
+        query = query.filter(User.is_admin == True)
 
     users = query.all()
 

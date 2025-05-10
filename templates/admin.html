@@ -7,57 +7,41 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="{{ url_for('static', filename='backend.js') }}" defer></script>
-  <style>
-/* Styling for the Schedule column */
-.review-users-box th:nth-child(7), /* Assuming the Schedule column is the 7th column */
-.review-users-box td:nth-child(7) {
-    text-align: center; /* Center the text */
-    padding: 12px; /* Add padding for spacing */
-    border: 1px solid #ddd; /* Add a light border around each cell */
-    word-wrap: break-word; /* Ensure long text wraps inside the cell */
-}
-</style>
 </head>
 
 <body>
-<!-- Admin Dashboard amer --> 
+<!-- Admin Dashboard --> 
 <div class="admin-panel">
   <header class="admin-header">
       <h1><i class="fas fa-user-shield"></i> Student Access Control</h1>
   </header>
 
-  <!-- Flex container for search box and admin boxes -->
-  <div class="admin-panel-top">
-      <!-- Search box wrapped in a form -->
+  <div class="admin-controls-container">
+    <!-- Top row with search and admin actions -->
+    <div class="top-controls">
+      <!-- Search box -->
       <form id="searchForm">
-          <div class="search-container" id="search-container">
-              <input type="text" placeholder="Search..." name="search">
-              <button type="submit">🔍</button>
-          </div>
+        <div class="search-container" id="search-container">
+          <input type="text" placeholder="Search..." name="search">
+          <button type="submit">🔍</button>
+        </div>
       </form>
-
-      <!-- Admin Boxes Container -->
-      <div class="admin-boxes">
-          <!-- Add User Box -->
-          <div class="admin-box" id="addUserBox">
-              <h2>Add User</h2>
-              <p>Add new users.</p>
-          </div>
-
-          <!-- Archive User Box -->
-          <div class="admin-box" id="removeUserBox">
-              <h2 class="delete-text">Archive User</h2> <!-- Add class 'delete-text' -->
-              <p>Archive existing users.</p>
-          </div>
+      
+      <!-- Admin action buttons -->
+      <div class="admin-actions">
+        <div class="admin-action-btn add-user-btn" id="addUserBox">Add User</div>
+        <div class="admin-action-btn archive-user-btn" id="removeUserBox">Archive User</div>
+        <div class="admin-action-btn admin-info-btn" id="adminInfoBox">Admin Info</div>
       </div>
-  </div>
-
-  <!-- Move filter buttons under the search box -->
-  <div class="filter-buttons">
-    <button id="showActiveUsers" class="filter-button">Active Users</button>
-    <button id="showArchivedUsers" class="filter-button">Archived Users</button>
-    <button id="showSuperUsers" class="filter-button">Super Users</button>
-    <button id="showUserLogins" class="filter-button">UserLogins</button>
+    </div>
+    
+    <!-- Filter buttons row -->
+    <div class="filter-controls">
+      <button id="showActiveUsers" class="filter-button active">Active Users</button>
+      <button id="showArchivedUsers" class="filter-button">Archived Users</button>
+      <button id="showSuperUsers" class="filter-button">Super Users</button>
+      <button id="showUserLogins" class="filter-button">UserLogins</button>
+    </div>
   </div>
 
   <!-- Users Table -->
@@ -113,7 +97,6 @@
     </table>
   </div>
 
-
   <!-- UserLogins Table -->
   <div id="UserLoginsContainer" class="review-users-box" style="display: none;">
     <h2 style="margin-bottom: 20px;">Login & Logout History</h2>
@@ -145,7 +128,7 @@
 <!-- Add User Modal -->
 <div id="addUserModal" class="modal">
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <span class="close">×</span>
     <form class="add-user-form" id="addUserForm"> 
       <h2>Add User</h2>
       <input type="text" name="name" placeholder="User Name" required />
@@ -194,7 +177,7 @@
 <!-- Archive User Modal -->
 <div id="removeUserModal" class="modal">
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <span class="close">×</span>
     <form class="remove-user-form" id="removeUserForm">
       <h2>Archive User</h2>
       <input type="text" name="user_id" placeholder="User ID" required />
@@ -206,7 +189,7 @@
 <!-- Update User Modal -->
 <div id="updateUserModal" class="modal">
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <span class="close">×</span>
     <form class="update-user-form" id="updateUserForm">
       <h2>Update User Information</h2>
       <input type="text" name="name" id="updateName" placeholder="User Name" required />
@@ -253,10 +236,36 @@
   </div>
 </div>
 
+<!-- Admin Info Modal -->
+<div id="adminInfoModal" class="modal">
+  <div class="modal-content">
+    <span class="close">×</span>
+    <form class="add-user-form" id="adminInfoForm"> 
+      <h2>Admin Information</h2>
+      <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+        <p style="margin: 0; color: #856404; font-weight: 500;">
+          <strong>Warning:</strong> Only one admin is allowed in the system. 
+          Adding a new admin will <strong>completely remove</strong> the existing admin from the database.
+        </p>
+      </div>
+      <input type="text" name="admin_name" placeholder="Admin Name" required />
+      <input type="email" name="admin_email" placeholder="Admin Email" required />
+      <input type="text" name="admin_id" placeholder="Admin ID (must be 9-10 digits)" 
+        pattern="\d{9,10}" title="Admin ID must be 9-10 digits" required />
+      <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+        <p style="margin: 0; font-size: 14px; color: #666;">
+          <strong>Note:</strong> Admins automatically receive super user privileges and do not expire.
+        </p>
+      </div>
+      <button type="submit" id="saveAdminInfoButton">Save Admin Info</button>
+    </form>
+  </div>
+</div>
+
 <!-- User Schedule Modal -->
 <div id="scheduleModal" class="modal">
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <span class="close">×</span>
     <h2>Manage Schedule</h2>
     <table id="scheduleTable">
       <thead>
@@ -279,5 +288,5 @@
 <footer class="admin-footer">
   <p>© 2024 University Computer Access System | All rights reserved.</p>
 </footer>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d86eab6ddec029',t:'MTc0Njg2OTU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

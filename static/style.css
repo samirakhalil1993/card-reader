@@ -59,122 +59,152 @@ body {
 /* Styling for the header text */
 .admin-header h1 {
   font-size: 2em;
-  color: #0c0c0e;
+  color: #ffffff;
   font-weight: bold; /* Makes the text bold */
   text-transform: uppercase; /* Converts text to uppercase */
   letter-spacing: 1px; /* Adds spacing between letters for better readability */
   margin: 0; /* Removes default margin to keep spacing consistent */
 }
 
-/* Search box container ************************************************************************************************/
-/* Search box styling */
-.search-container {
-  display: flex; /* Enables flexbox for better layout */
-  align-items: center; /* Aligns items vertically */
-  border: 2px solid #ccc; /* Adds a gray border */
-  border-radius: 25px; /* Rounds the edges of the search box */
-  padding: 5px 10px; /* Adds padding inside the search box */
-  width: 280px; /* Sets the width */
-  margin: 0 0 10px 0; /* Centers the search box and adds space below */
+/* Improved Layout Styling */
+/* Main container for all controls */
+.admin-controls-container {
+  width: 90%;
+  max-width: 1250px;
+  margin: 0 auto 20px;
 }
 
-/* Search input field */
-.search-container input {
-  border: none; /* Removes the default border */
-  outline: none; /* Removes the focus outline */
-  width: 100%; /* Ensures the input fills the container */
-  padding: 6px; /* Adds padding inside the input field */
-}
-
-/* Search button */
-.search-container button {
-  background: #007bff; /* Sets background color to blue */
-  color: white; /* Sets text color to white */
-  border: none; /* Removes the border */
-  padding: 6px 12px; /* Adds padding for better appearance */
-  cursor: pointer; /* Changes cursor to pointer on hover */
-  border-radius: 15px; /* Rounds the button edges */
-}
-
-/* Hover effect for the search button */
-.search-container button:hover {
-  background: #0056b3; /* Darkens the button on hover */
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  .review-users-box {
-    width: 95%; /* Makes the box slightly wider on small screens */
-    padding: 10px; /* Reduces padding */
-  }
-  .search-container {
-    width: 100%; /* Makes the search box fill the width */
-  }
-}
-
-@media (max-width: 600px) {
-  .admin-header h1 {
-    font-size: 1.4rem;
-  }
-}
-
-/* Filter Buttons Styling *********************************************************************************************/
-/* Styling for the search and filter container */
-.search-and-filter-container {
+/* Top row with search and admin actions */
+.top-controls {
   display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  align-items: center; /* Center elements horizontally */
-  gap: 10px; /* Add spacing between the search box and filter buttons */
-  margin-bottom: 20px; /* Add space below the container */
-  width: 100%; /* Ensure it spans the full width */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 20px;
 }
 
-/* Filter Buttons Styling */
-.filter-buttons {
-  display: flex; /* Enable flexbox for the buttons */
-  flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
-  justify-content: center; /* Center the buttons horizontally */
-  gap: 10px; /* Add spacing between buttons */
-  width: 100%; /* Ensure buttons take up full width */
+/* Search styling */
+.search-container {
+  flex: 0 0 300px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  padding: 5px 10px;
+  background: white;
 }
 
-/* Individual filter button styling */
-.filter-button {
-  background-color: #007bff; /* Default blue color */
+.search-container input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 6px;
+  background: transparent;
+}
+
+.search-container button {
+  background: #007bff;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 6px 12px;
   cursor: pointer;
+  border-radius: 15px;
+}
+
+.search-container button:hover {
+  background: #0056b3;
+}
+
+/* Admin action buttons */
+.admin-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-action-btn {
+  padding: 10px 15px;
+  background-color: white;
+  border: 1px solid #dee2e6;
   border-radius: 5px;
-  transition: background-color 0.3s ease;
-  flex: 1; /* Allow buttons to grow and fill available space */
-  max-width: 200px; /* Set a maximum width for buttons */
-  text-align: center; /* Center text inside buttons */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
 }
 
-/* Hover effect for filter buttons */
-.filter-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+.admin-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Active filter button styling */
-.filter-button.active {
-  background-color: #0056b3; /* Darker blue for active state */
+.add-user-btn {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.archive-user-btn {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.admin-info-btn {
+  color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+/* Filter buttons row */
+.filter-controls {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-button {
+  padding: 10px 20px;
+  background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
 }
 
-/* Responsive adjustments for smaller screens */
+.filter-button:hover {
+  background-color: #0056b3;
+}
+
+.filter-button.active {
+  background-color: #0056b3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
-  .filter-buttons {
-    flex-direction: column; /* Stack buttons vertically on smaller screens */
-    align-items: center; /* Center buttons horizontally */
+  .top-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
-
+  
+  .search-container {
+    flex: none;
+    width: 100%;
+  }
+  
+  .admin-actions {
+    justify-content: space-between;
+  }
+  
+  .filter-controls {
+    flex-wrap: wrap;
+  }
+  
   .filter-button {
-    width: 100%; /* Make buttons take up full width */
-    max-width: none; /* Remove max-width restriction */
+    flex: 1 0 calc(50% - 5px);
+    text-align: center;
   }
 }
+
 /* Styling for the review users box (container for the table) *******************************************************/
 .review-users-box {
   background-color: #ffffff;
@@ -260,8 +290,8 @@ td {
 }
 
 /* Styling for the Schedule column */
-.review-users-box th:nth-child(6), /* Assuming the Schedule column is the 6th column */
-.review-users-box td:nth-child(6) {
+.review-users-box th:nth-child(7), /* The Schedule column is the 7th column */
+.review-users-box td:nth-child(7) {
     text-align: center; /* Center the text */
     padding: 12px; /* Add padding for spacing */
     border: 1px solid #ddd; /* Add a light border around each cell */
@@ -276,113 +306,6 @@ td {
 /* Hover effect for rows */
 #usersTable tbody tr:hover {
     background-color: #e9ecef; /* Softer hover color */
-}
-
-/* Box Container *************************************************************************************************************/
-.admin-boxes {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  gap: 30px; /* More spacing */
-  max-width: 900px; /* Keeps it structured */
-  margin: 0 auto;
-  flex-wrap: wrap;
-}
-.admin-box {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  padding: 20px;
-  text-align: center;
-  width: 45%;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  width: 280px; /* Consistent box size */
-  text-align: center;
-}
-
-/* Individual Box Styling ************************************/
-/* Wrap search and admin boxes in a flex container */
-/* Flexbox container for search box and admin boxes */
-.admin-panel-top {
-  display: flex; /* Enables flexbox */
-  justify-content: space-between; /* Aligns elements in a row */
-  align-items: center; /* Aligns items vertically */
-  width: 100%; /* Ensures full width */
-  max-width: 1250px; /* Prevents excessive stretching */
-  margin: 0 auto 20px; /* Centers the section */
-}
-
-/* Admin boxes container (aligned next to each other) */
-.admin-boxes {
-  display: flex; /* Enables flexbox */
-  flex-direction: row; /* Aligns boxes in a row */
-  gap: 10px; /* Adds space between boxes */
-  justify-content: flex-end;
-  width: 100%;
-  padding-left: 25rem;
-}
-
-/* Hide the paragraph by default */
-.admin-box p {
-  width: 100%;
-  font-size: 0.9rem; /* Smaller text */
-  color: #080808;
-  margin: 0;
-  opacity: 0; /* Initially hidden */
-  position: absolute; /* Allows positioning outside the box */
-  left: 0; /* Center it horizontally */
-  transform: none; /* Align center properly */
-  top: 110%; /* Position below the box */
-  white-space: nowrap; /* Prevent text wrapping */
-  background: white; /* Add background for visibility */
-  padding: 5px 10px; /* Add spacing */
-  border-radius: 5px; /* Smooth rounded corners */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Light shadow effect */
-  transition: opacity 0.3s ease-in-out; /* Smooth fade-in effect */
-  pointer-events: none; /* Prevents interaction issues */
-}
-
-/* Ensure the container has relative positioning */
-.admin-box {
-  position: relative; /* Required for absolute positioning of the text */
-  display: inline-block; /* Keeps the box size fixed */
-  padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  width: 150px;
-  text-align: center;
-}
-
-/* Show the paragraph when hovering over the box */
-.admin-box:hover p {
-  opacity: 1; /* Make text fully visible */
-}
-
-.admin-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  background-color: #f1f1f1;
-}
-
-.admin-box h2 {
-  font-size: 1rem; /* Smaller font size */
-  margin-bottom: 5px;
-  color: #007bff;
-}
-
-/* Responsive Design: Adjust layout for smaller screens */
-@media screen and (max-width: 768px) {
-  .admin-panel-top {
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center them */
-  }
-
-  .admin-boxes {
-    flex-direction: column; /* Stack boxes vertically on small screens */
-    align-items: center;
-  }
 }
 
 #usersTable tbody tr {
@@ -698,4 +621,3 @@ button.delete-button:hover {
 .view-schedule-text:hover {
     color: #0056b3;
 }
-
