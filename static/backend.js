@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to generate random 9-digit code
     function generateRandomCode() {
         let code = '';
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 5; i++) {
             code += Math.floor(Math.random() * 10); // Random digit 0-9
         }
         return code;
