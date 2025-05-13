@@ -126,6 +126,7 @@ def add_user():
 
         # Set expiration date to 1 year from now
         expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()
+
         # Create a new User instance
         new_user = User(
             user_id=data['user_id'],
@@ -134,7 +135,8 @@ def add_user():
             program=data.get('program', 'Unknown'),
             expiration_time=expiration_time,
             schedules=data.get('schedules', {}),
-            is_super_user=data.get('is_super_user', False)  # Default to False
+            is_super_user=data.get('is_super_user', False),  # Default to False
+            temporary_status="Active"  # Set a default value for temporary_status
         )
         db.session.add(new_user)
         db.session.commit()
