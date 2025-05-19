@@ -138,7 +138,15 @@ def add_user():
             is_super_user=data.get('is_super_user', False),  # Default to False
             temporary_status="Active"  # Set a default value for temporary_status
         )
+        
+        # Add the new user to the session
         db.session.add(new_user)
+        
+        # Commit to get the ID assigned
+        db.session.commit()
+        
+        # Calculate and save the status
+        new_user.calculate_status()
         db.session.commit()
 
         return jsonify({

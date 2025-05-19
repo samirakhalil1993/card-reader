@@ -41,7 +41,10 @@ class User(db.Model):
     random_code = db.Column(db.String(10), nullable=True)
     is_super_user = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)  # New column for admin status
-
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        # Calculate status when a new user is created
+        self.calculate_status()
     def calculate_status(self):
         """Calculate the user's temporary status and update status2."""
         if self.is_super_user:
