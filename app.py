@@ -256,6 +256,7 @@ def archive_user():
         if user:
             was_super_user = user.is_super_user  # Check if the user was a super user
             user.is_active = False  # Set is_active to False
+            user.status2=0
             if was_super_user:
                 user.is_super_user = False  # Remove super user status
             cet = pytz_timezone('Europe/Stockholm')  # Use pytz timezone with alias
@@ -275,7 +276,6 @@ def archive_user():
 def reactivate_user():
     try:
         data = request.get_json()
-        #user_id = data.get('user_id').strip().replace("-", "")
         user_id = data.get('user_id')  # No need to normalize or decrypt
         all_users = User.query.all()
         user = next((u for u in all_users if u.user_id == user_id), None)
@@ -283,9 +283,15 @@ def reactivate_user():
             if not user.is_active:
                 user.expiration_time = (datetime.now(timezone.utc) + timedelta(days=365)).date()
             user.is_active = True
+            
+            # Calculate status based on current time and schedule
+            user.calculate_status()
+            
             db.session.commit()
             return jsonify({
                 "message": f"User {user.name} reactivated successfully! Expiration Time: {user.expiration_time.isoformat()}",
+                "status2": user.status2,
+                "temporary_status": user.temporary_status
             }), 200
         else:
             return jsonify({"error": "User not found."}), 404
