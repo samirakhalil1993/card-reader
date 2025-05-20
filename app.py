@@ -256,7 +256,7 @@ def archive_user():
         if user:
             was_super_user = user.is_super_user  # Check if the user was a super user
             user.is_active = False  # Set is_active to False
-            user.status2=0
+            user.status2 = 0  # Set status2 to 0
             if was_super_user:
                 user.is_super_user = False  # Remove super user status
             cet = pytz_timezone('Europe/Stockholm')  # Use pytz timezone with alias
