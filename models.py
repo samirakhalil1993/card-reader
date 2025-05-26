@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-from cryptography.fernet import Fernet
+#from cryptography.fernet import Fernet
 import os
 from dotenv import load_dotenv
 from datetime import datetime

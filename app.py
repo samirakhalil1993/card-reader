@@ -12,13 +12,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
 # Load environment variables from .env file.
-#load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
 # Configure Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://sqladmin@admin-panel-server:Card.1111@admin-panel-server.database.windows.net/admin_panel_db?driver=ODBC+Driver+17+for+SQL+Server'
+# Get the DATABASE_URI from the .env file
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -417,6 +418,8 @@ def get_user_logins():
         "per_page": paginated_logs.per_page  # Items per page
     })
 
+# if __name__ == '__main__':
+#     app.run(debug=True)
+#     #app.run(debug=True, port=5001)
 if __name__ == '__main__':
-    app.run(debug=True)
-    #app.run(debug=True, port=5001)
+    app.run(host='0.0.0.0', port=5000)
